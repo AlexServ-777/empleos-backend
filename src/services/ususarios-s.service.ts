@@ -34,7 +34,6 @@ export class UsusariosSService {
             throw new HttpException('Usuario no encontrado', 404);
         }
         const data:CreateUsuarioDto = await new userInfoDto().sanitizar(user);
-        console.log(data);
         return data;
     }
     async loginUser(usuarioData:loginUserDTO){

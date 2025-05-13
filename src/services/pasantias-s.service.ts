@@ -32,7 +32,14 @@ export class PasantiasSService {
             delete element.user;
         });
         return pasantias;
-    }//pendiente
+    }
+
+    async getPasantiaService(id){
+        const pasantia = await this.pasantiaRepository.findOneBy({id_pasantia:id});
+        if(!pasantia) throw new NotFoundException('Este recurso no existe');
+        console.log(pasantia);
+        return pasantia;
+    }
 
     //POSTS
     async createPasantia(data:createPasantiaDTO, req){

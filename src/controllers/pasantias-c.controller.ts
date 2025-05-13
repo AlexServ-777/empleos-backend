@@ -19,6 +19,12 @@ export class PasantiasCController {
     async getPasntiasUserController(@Req() req:Request){
         return this.pasantiaService.getPasantiasUser(req);
     }
+
+    @Get('getPasantia/:id')
+    async getPasantiaController(@Param('id') id:string){
+        return this.pasantiaService.getPasantiaService(Number(id));
+    }
+
     //POSTS
     @UseGuards(JwtGuardConf)
     @Post('newPasantia')
