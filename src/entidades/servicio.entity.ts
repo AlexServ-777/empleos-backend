@@ -12,13 +12,13 @@ export class ServiciosEntity {
     @Column({ nullable: false,length:50 })
     categoria: string;
 
-    @Column({nullable:false})
+    @Column({nullable:false, type:"bigint"})
     num_telf:number;
 
     @Column({ nullable: false })
     precio: number;
 
-    @Column({ type:"enum",enum:['presencial','remoto','hibrido'],nullable:false})
+    @Column({ type:"enum",enum:['Presencial','Remoto','Hibrido'],nullable:false})
     modalidad: string;
 
     @Column({ nullable: false,length:1000 })

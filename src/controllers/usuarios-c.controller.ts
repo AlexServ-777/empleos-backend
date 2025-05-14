@@ -19,6 +19,12 @@ export class UsuarioCController {
       getUsuario(@Req() req:Request):Promise<any>{
         return this.appService.getUser(req);
       }
+      @UseGuards(JwtGuardConf)
+      @Get('pais')
+      getPaisUser(@Req() req:Request):Promise<any>{
+        return this.appService.getPaisUser(req);
+      }
+
 
       @Post('login')
       async login(@Body() user:loginUserDTO):Promise<any>{

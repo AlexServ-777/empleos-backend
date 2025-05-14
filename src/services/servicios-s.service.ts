@@ -43,6 +43,7 @@ export class ServiciosSService {
         if(!usuario){throw new NotFoundException('El usuario ya no existe')}
         const newServicio = this.serviciosRepository.create(data);
         newServicio.user= usuario;
+        newServicio.pais = usuario.pais;
         await this.serviciosRepository.save(newServicio);
         return{message:"servicio creado"};
     }

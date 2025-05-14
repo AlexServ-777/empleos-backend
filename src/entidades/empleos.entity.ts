@@ -18,7 +18,7 @@ export class EmpleosEntity {
     @Column({nullable:false, type:"bigint"})
     num_telf: number;
 
-    @Column({ type:"enum",enum:['presencial','remoto','hibrido'],nullable:false})
+    @Column({ type:"enum",enum:['Presencial','Remoto','Hibrido'],nullable:false})
     modalidad:string
 
     @Column({nullable: false, length:50})

@@ -36,6 +36,12 @@ export class UsusariosSService {
         const data:CreateUsuarioDto = await new userInfoDto().sanitizar(user);
         return data;
     }
+    async getPaisUser(req){
+        const user = await this.usuarioRepository.findOne({select:['pais'],where:{id_usuario:req.user.id}});
+        if(!user) throw new NotFoundException('El usuario no existe');
+        return {pais:user.pais};
+    }
+
     async loginUser(usuarioData:loginUserDTO){
         const {email,password} = usuarioData;
         const user = await this.usuarioRepository.findOne({ where: { email } });
