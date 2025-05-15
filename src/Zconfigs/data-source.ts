@@ -10,8 +10,8 @@ export const AppDataSource = new DataSource({
     host: 'localhost',
     port: 3306,
     username: 'root',  
-    password: 'root',
-    database: 'empleosDB',
+    password: '080403Alex',
+    database: 'empleosdb',
     entities: [UsuarioEntity, PasantiaEntity,EmpleosEntity,ServiciosEntity],
     synchronize: true,
     migrations: [join(__dirname,'/../migrations/*.ts')], //muy sensible, tratar de no tocar, mas que todo son los slash

@@ -10,8 +10,7 @@ async function bootstrap() {
   app.enableCors(cors);
   app.setGlobalPrefix('api');
   
-  const configService = app.get(ConfigService);
-  await app.listen(configService.get('PORT').toString());
+  await app.listen(8000);
   console.log(`Application is running on: ${await app.getUrl()}`);
 
 }

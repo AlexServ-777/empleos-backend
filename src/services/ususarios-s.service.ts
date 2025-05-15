@@ -3,7 +3,7 @@ import { UsuarioEntity } from '../entidades/usuarios.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUsuarioDto, loginUserDTO, UpdateUsuarioDto, userInfoDto} from '../dtos/usuarios.dto';
-import {hash,compare} from 'bcrypt';
+import {hash,compare} from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { EmpleosEntity } from '../entidades/empleos.entity';
 @Injectable()
