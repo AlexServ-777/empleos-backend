@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn } f
 import { EmpleosEntity } from './empleos.entity';
 import { PasantiaEntity } from './pasantias.entity';
 import { ServiciosEntity } from './servicio.entity';
+import { FavoritosEntity } from './favoritos.entity';
 @Entity()
 export class UsuarioEntity {
     @PrimaryGeneratedColumn()
@@ -44,4 +45,8 @@ export class UsuarioEntity {
 
     @OneToMany(()=>ServiciosEntity,(servicio)=>servicio.user, {cascade:true,onDelete:"CASCADE"})
     servicios:ServiciosEntity[];
+
+    //favoritos
+    @OneToMany(() => FavoritosEntity, (favorito) => favorito.usuario, {cascade:true, onDelete:"CASCADE"})
+    favoritos: FavoritosEntity[];
 }

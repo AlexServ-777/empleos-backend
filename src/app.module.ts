@@ -10,6 +10,7 @@ import { UsuariosModule } from './modulos/usuarios.module';
 import { AppDataSource } from './Zconfigs/data-source';
 import { ServiciosModule } from './modulos/servicios.module';
 import { ServiciosEntity } from './entidades/servicio.entity';
+import { FavoritosEntity } from './entidades/favoritos.entity';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { ServiciosEntity } from './entidades/servicio.entity';
     TypeOrmModule.forRootAsync({
       useFactory: () => AppDataSource.options,
     }),
-    TypeOrmModule.forFeature([UsuarioEntity, PasantiaEntity,EmpleosEntity,ServiciosEntity]),
+    TypeOrmModule.forFeature([UsuarioEntity, PasantiaEntity,EmpleosEntity,ServiciosEntity,FavoritosEntity]),
     EmpleosModule,
     ServiciosModule,
     PasantiasModule,

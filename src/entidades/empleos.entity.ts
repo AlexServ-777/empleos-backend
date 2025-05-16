@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, Timestamp, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, Timestamp, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { UsuarioEntity } from './usuarios.entity';
+import { FavoritosEntity } from './favoritos.entity';
 @Entity()
 export class EmpleosEntity {
 
@@ -48,4 +49,7 @@ export class EmpleosEntity {
     // relación
     @ManyToOne(()=>UsuarioEntity,(user)=>user.empleos,{onDelete:'CASCADE'})
     user:UsuarioEntity;
+
+    @OneToMany(() => FavoritosEntity, (favorito) => favorito.empleo)
+    favoritos: FavoritosEntity[];
 }

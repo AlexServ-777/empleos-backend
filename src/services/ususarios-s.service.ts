@@ -6,6 +6,9 @@ import { CreateUsuarioDto, loginUserDTO, UpdateUsuarioDto, userInfoDto} from '..
 import {hash,compare} from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { EmpleosEntity } from '../entidades/empleos.entity';
+import { FavoritosEntity } from '../entidades/favoritos.entity';
+import { ServiciosEntity } from '../entidades/servicio.entity';
+import { PasantiaEntity } from '../entidades/pasantias.entity';
 @Injectable()
 export class UsusariosSService {    
     constructor(
@@ -15,6 +18,15 @@ export class UsusariosSService {
 
         @InjectRepository(EmpleosEntity)
         private readonly empleosRepository: Repository<EmpleosEntity>,
+
+        @InjectRepository(FavoritosEntity)
+        private readonly favoritosRepository: Repository<FavoritosEntity>,
+
+        @InjectRepository(ServiciosEntity)
+        private readonly serviciosRepository: Repository<ServiciosEntity>,
+
+        @InjectRepository(PasantiaEntity)
+        private readonly pasantiasRepository: Repository<PasantiaEntity>,
 
     ) {}
 
@@ -117,5 +129,65 @@ export class UsusariosSService {
         const newPass = await hash(data.newPass,10);
         await this.usuarioRepository.update({id_usuario:req.user.id}, {password:newPass});
         return {message:"exito"}
+    }
+
+
+    //FAVORITOS
+    async setFavorito(req, data) {
+        const { id_recurso, tipo_recurso } = data;
+        const usuario = await this.usuarioRepository.findOneBy({ id_usuario: req.user.id });
+        if (!usuario) {
+            throw new NotFoundException('Usuario no encontrado');
+        }
+        // Verificar si ya existe el favorito
+        const favoritoExistente = await this.favoritosRepository.findOne({
+            where: {
+                usuario: { id_usuario: usuario.id_usuario },
+                tipo_favorito: tipo_recurso,
+                ...(tipo_recurso === 'empleo' && { empleo: { id_empleo: id_recurso } }),
+                ...(tipo_recurso === 'servicio' && { servicio: { id_servicio: id_recurso } }),
+                ...(tipo_recurso === 'pasantia' && { pasantia: { id_pasantia: id_recurso } })
+            },
+            relations: ['usuario', 'empleo', 'servicio', 'pasantia']
+        });
+
+        if (favoritoExistente) {
+            throw new HttpException('Este recurso ya está en favoritos', 400);
+        }
+
+        const newFavorito = this.favoritosRepository.create({
+            tipo_favorito: tipo_recurso,
+            usuario: usuario
+        });
+
+        // Establecer la relación según el tipo
+        switch (tipo_recurso) {
+            case 'empleo':
+                const empleo = await this.empleosRepository.findOneBy({ id_empleo: id_recurso });
+                if (!empleo) throw new NotFoundException('Empleo no encontrado');
+                newFavorito.empleo = empleo;
+                break;
+            case 'servicio':
+                const servicio = await this.serviciosRepository.findOneBy({ id_servicio: id_recurso });
+                if (!servicio) throw new NotFoundException('Servicio no encontrado');
+                newFavorito.servicio = servicio;
+                break;
+            case 'pasantia':
+                const pasantia = await this.pasantiasRepository.findOneBy({ id_pasantia: id_recurso });
+                if (!pasantia) throw new NotFoundException('Pasantía no encontrada');
+                newFavorito.pasantia = pasantia;
+                break;
+            default:
+                throw new HttpException('Tipo de recurso no válido', 400);
+        }
+
+        await this.favoritosRepository.save(newFavorito);
+        return { message: "Agregado a favoritos" };
+    }
+    async getFavoritos(req){
+        const usuario = await this.usuarioRepository.findOneBy({id_usuario:req.user.id});
+        if(!usuario) throw new NotFoundException('Usuario no encontrado');
+        const favoritos = await this.favoritosRepository.find({where:{usuario:{id_usuario:usuario.id_usuario}},relations:['usuario','empleo','servicio','pasantia']});
+        return favoritos;
     }
 }

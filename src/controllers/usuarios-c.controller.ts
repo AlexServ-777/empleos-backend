@@ -60,4 +60,10 @@ export class UsuarioCController {
       async changePassController(@Req() req:Request, @Body() data){
         return await this.appService.changePassword(req,data);
       }
+
+      @UseGuards(JwtGuardConf)
+      @Get('favoritos')
+      async getFavoritos(@Req() req:Request):Promise<any>{
+        return await this.appService.getFavoritos(req);
+      }
 }

@@ -10,10 +10,11 @@ import { HttpStrategy } from '../Zconfigs/jwt.strategy';
 import { EmpleosEntity } from '../entidades/empleos.entity';
 import { PasantiaEntity } from '../entidades/pasantias.entity';
 import { ServiciosEntity } from '../entidades/servicio.entity';
+import { FavoritosEntity } from 'src/entidades/favoritos.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UsuarioEntity,EmpleosEntity,PasantiaEntity, ServiciosEntity]),
+    TypeOrmModule.forFeature([UsuarioEntity,EmpleosEntity,PasantiaEntity, ServiciosEntity,FavoritosEntity]),
     PassportModule,
     //registro de mi clave secreta de jwt
     JwtModule.register({

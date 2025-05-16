@@ -1,6 +1,7 @@
 import { timestamp } from 'rxjs';
 import { UsuarioEntity } from './usuarios.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { FavoritosEntity } from './favoritos.entity';
 
 @Entity()
 export class PasantiaEntity {
@@ -54,4 +55,7 @@ export class PasantiaEntity {
 
     @ManyToOne(()=>UsuarioEntity,(user)=>user.pasantias,{onDelete:'CASCADE'})
     user?:UsuarioEntity;
+
+    @OneToMany(() => FavoritosEntity, (favorito) => favorito.pasantia)
+    favoritos: FavoritosEntity[];
 }

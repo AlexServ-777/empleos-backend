@@ -1,5 +1,6 @@
 import { UsuarioEntity } from "./usuarios.entity";
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn, OneToMany } from "typeorm";
+import { FavoritosEntity } from "./favoritos.entity";
 
 @Entity()
 export class ServiciosEntity {
@@ -44,4 +45,7 @@ export class ServiciosEntity {
 
     @ManyToOne(()=>UsuarioEntity,(usuario)=>usuario.servicios,{onDelete:'CASCADE'})
     user:UsuarioEntity;
+
+    @OneToMany(() => FavoritosEntity, (favorito) => favorito.servicio)
+    favoritos: FavoritosEntity[];
 }

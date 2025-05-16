@@ -4,6 +4,7 @@ import { UsuarioEntity } from "../entidades/usuarios.entity";
 import { PasantiaEntity } from "../entidades/pasantias.entity";
 import { EmpleosEntity } from "../entidades/empleos.entity";
 import { ServiciosEntity } from "../entidades/servicio.entity";
+import { FavoritosEntity } from "src/entidades/favoritos.entity";
 
 export const AppDataSource = new DataSource({
     type: 'mysql',
@@ -12,7 +13,7 @@ export const AppDataSource = new DataSource({
     username: 'root',  
     password: '080403Alex',
     database: 'empleosdb',
-    entities: [UsuarioEntity, PasantiaEntity,EmpleosEntity,ServiciosEntity],
+    entities: [UsuarioEntity, PasantiaEntity,EmpleosEntity,ServiciosEntity,FavoritosEntity],
     synchronize: true,
     migrations: [join(__dirname,'/../migrations/*.ts')], //muy sensible, tratar de no tocar, mas que todo son los slash
     //bueno, descubri que cada vez que se quita el salsh no da problemas en las migraciones, pero si en iniciar el servidor
