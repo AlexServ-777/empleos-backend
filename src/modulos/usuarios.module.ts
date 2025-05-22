@@ -11,6 +11,7 @@ import { EmpleosEntity } from '../entidades/empleos.entity';
 import { PasantiaEntity } from '../entidades/pasantias.entity';
 import { ServiciosEntity } from '../entidades/servicio.entity';
 import { FavoritosEntity } from 'src/entidades/favoritos.entity';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [

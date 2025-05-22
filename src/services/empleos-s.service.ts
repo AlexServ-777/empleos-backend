@@ -2,7 +2,7 @@ import { ForbiddenException, HttpException, Injectable, NotFoundException } from
 import { InjectRepository} from '@nestjs/typeorm';
 import { EmpleosEntity } from '../entidades/empleos.entity';
 import { Repository } from 'typeorm'
-import { createEmpleoDTO,updateEmpleoDTO } from '../dtos/empleos.dto';
+import { createEmpleoDTO,sanitizarEmpleoDTO,updateEmpleoDTO } from '../dtos/empleos.dto';
 import { UsuarioEntity } from '../entidades/usuarios.entity';
 
 @Injectable()
@@ -15,33 +15,36 @@ export class EmpleosSService {
         private readonly usuarioRepository : Repository<UsuarioEntity>,
     ){}
     //gets
-    getEmpleos():Promise<any>{
-        return this.empleosRepository.find();
+    async getEmpleos():Promise<any>{
+        const empleos = await this.empleosRepository.find();
+        const empleosSanitizados = await Promise.all(empleos.map(empleo => new sanitizarEmpleoDTO().sanitizar(empleo)));
+        return empleosSanitizados;
     }
     //get para empleos del usuario
-    async getEmpleosUser(req):Promise<any>{
+    async getEmpleosUser(req:any):Promise<any>{
         const empleosUser = await this.usuarioRepository.findOne({where:{id_usuario:req.user.id}, relations:['empleos']});
-        return empleosUser?.empleos??[];
+        const empleosSanitizados = await Promise.all(empleosUser?.empleos.map(empleo => new sanitizarEmpleoDTO().sanitizar(empleo))??[]);
+        return empleosSanitizados;
     }
     //get para mostrar detaller de un empleo (publico)
     async getEmpleoInformacion(id:number):Promise<any>{
         const empleo = await this.empleosRepository.findOne({where:{id_empleo:id}});
         if(!empleo) throw new NotFoundException('No existe el recurso');
-        return {message:"exito", empleo};
+        const empleoSanitizado = await new sanitizarEmpleoDTO().sanitizar(empleo);
+        return empleoSanitizado;
     }
 
-
-    async createEmpleo(empleoData: createEmpleoDTO, req){
+    async createEmpleo(empleoData: createEmpleoDTO, req:any){
         const user = await this.usuarioRepository.findOneBy({id_usuario:req.user.id});
         if(!user) throw new HttpException('EL USUARIO NO EXISTE',404);
         empleoData.user = user;
         empleoData.pais = user.pais;
         const empleoCreate = this.empleosRepository.create(empleoData);
-        const saveEmp = await this.empleosRepository.save(empleoCreate)
-        return {message:"ok", saveEmp};
+        await this.empleosRepository.save(empleoCreate);
+        return {message:"ok"};
     }
 
-    async updateEmpleoService(data:updateEmpleoDTO, req,id:number){
+    async updateEmpleoService(data:updateEmpleoDTO, req:any,id:number){
         const user = await this.usuarioRepository.findOneBy({id_usuario:req.user.id})
         if(!user) throw new NotFoundException('El usuario ya no existe');
         const empleo = await this.empleosRepository.findOne({where:{id_empleo:id},relations:['user']}); 
@@ -55,7 +58,7 @@ export class EmpleosSService {
         }
     }
 
-    async deleteEmpleoService(req,id){
+    async deleteEmpleoService(req:any,id:number){
         //si o si relacionar las tablas en cada peticion para obtener los datos correctos
         const user = await this.usuarioRepository.findOneBy({id_usuario:req.user.id});
         if (!user) throw new HttpException('El usuario ya no existe', 404);
@@ -70,5 +73,4 @@ export class EmpleosSService {
             throw new ForbiddenException('No tienes autorizacion para hacer esto');
         }
     }
-
 }

@@ -1,4 +1,4 @@
-import { ForbiddenException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { UsuarioEntity } from '../entidades/usuarios.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -30,7 +30,7 @@ export class UsusariosSService {
 
     ) {}
 
-    getUsuarios(req) {
+    getUsuarios(req:any) {
         const rolUser = req.user.rol;
         if(rolUser==='admin'){
             return this.usuarioRepository.find();
@@ -39,16 +39,21 @@ export class UsusariosSService {
             throw new ForbiddenException('No tienes autorizacion para esto');
         }
     }
-    async getUser(req): Promise<CreateUsuarioDto> {
+    async getUser(req:any): Promise<CreateUsuarioDto> {
         const userIdToken = req.user.id;
         const user = await this.usuarioRepository.findOneBy({ id_usuario: userIdToken});
         if (!user) {
             throw new HttpException('Usuario no encontrado', 404);
         }
+        // Validar que el usuario solo pueda ver su propia información
+        if (user.rol !== 'admin' && user.id_usuario !== userIdToken) {
+            throw new ForbiddenException('No tienes permiso para ver esta información');
+        }
+
         const data:CreateUsuarioDto = await new userInfoDto().sanitizar(user);
         return data;
     }
-    async getPaisUser(req){
+    async getPaisUser(req:any){
         const user = await this.usuarioRepository.findOne({select:['pais'],where:{id_usuario:req.user.id}});
         if(!user) throw new NotFoundException('El usuario no existe');
         return {pais:user.pais};
@@ -66,7 +71,7 @@ export class UsusariosSService {
             nom_user: user.nom_usuario,
             rol:user.rol
         }
-        const token = await this.jwtService.sign(payload); //codificar el cuerpo payload
+        const token = this.jwtService.sign(payload); //codificar el cuerpo payload
         //enviar el token al frontend
         return {message:"exito al logearse", token}
     }
@@ -75,6 +80,12 @@ export class UsusariosSService {
         //validar que no se puedan crear usuarios admin
         if(usuarioData.rol==='admin'|| usuarioData?.rol==undefined||usuarioData.rol==null){
             throw new ForbiddenException('no tienes autorizacion para crear un admin');
+        }
+
+        //validar que el usuario no exista
+        const userExist = await this.usuarioRepository.findOneBy({email:usuarioData.email});
+        if(userExist){
+            throw new ConflictException('El usuario ya existe'); //409
         }
         //encriptar la contrasena
         const password = usuarioData.password;
@@ -88,11 +99,16 @@ export class UsusariosSService {
     }
 
     //creacion de usuarios admin y normales
-    async crearUsuarioAdmin(usuarioData:CreateUsuarioDto, req){
+    async crearUsuarioAdmin(usuarioData:CreateUsuarioDto, req:any){
         const adminId = req.user.id;
         const admin = await this.usuarioRepository.findOneBy({id_usuario:adminId})
         if(admin?.rol!=='admin'||!admin){
             throw new ForbiddenException('no eres admin, no puedes crear superUsuarios')
+        }
+        //validar que el usuario no exista
+        const userExist = await this.usuarioRepository.findOneBy({email:usuarioData.email});
+        if(userExist){
+            throw new ConflictException('El usuario ya existe'); //409
         }
         const password = usuarioData.password;
         const passEncrypt = await hash(password,10);
@@ -102,17 +118,14 @@ export class UsusariosSService {
         await this.usuarioRepository.save(newUser);
         return {message:"Registro exitoso"};
     }
-    async eliminarUsuario(req) {
-        const usuario = await this.usuarioRepository.findOne({ where:{id_usuario:req.user.id},relations:['empleos'] });
-        if (!usuario) throw new NotFoundException('Ya no existe este usuario');
-        const empleos = await this.empleosRepository.find({where:{user:{id_usuario:usuario.id_usuario}},relations:['user']})
-        if(!empleos) throw new NotFoundException('El recurso ya no existe');
-        await this.empleosRepository.remove(empleos);
+
+    async eliminarUsuario(req:any) {
+        const usuario = await this.usuarioRepository.findOne({ where:{id_usuario:req.user.id},relations:['empleos']});
+        if (!usuario) throw new NotFoundException('El usuario no existe');
         await this.usuarioRepository.remove(usuario);
         return { message: "exito" };
     }
-    async actualizarUsuario(usuarioData: UpdateUsuarioDto, req) {
-        console.log(usuarioData);
+    async actualizarUsuario(usuarioData: UpdateUsuarioDto, req:any) {
         const usuarios = await this.usuarioRepository.findOneBy({ id_usuario: req.user.id });
         if (!usuarios) throw new NotFoundException('El usuario ya no existe');
         if(usuarioData.rol==='admin') throw new ForbiddenException('No tienes permido para hacer esto');
@@ -125,7 +138,7 @@ export class UsusariosSService {
         if(!usuario) throw new NotFoundException('El usuario ya no existe');
         const passWordCompare = await compare(data.oldPass, usuario.password);
         if(!passWordCompare) throw new ForbiddenException('La contrasena actual es incorrecta');
-
+        
         const newPass = await hash(data.newPass,10);
         await this.usuarioRepository.update({id_usuario:req.user.id}, {password:newPass});
         return {message:"exito"}
@@ -189,5 +202,27 @@ export class UsusariosSService {
         if(!usuario) throw new NotFoundException('Usuario no encontrado');
         const favoritos = await this.favoritosRepository.find({where:{usuario:{id_usuario:usuario.id_usuario}},relations:['usuario','empleo','servicio','pasantia']});
         return favoritos;
+    }
+
+    async eliminarFavorito(req:any,id:number){
+        const favorito = await this.favoritosRepository.findOne({where:{id_favorito:id},relations:['usuario']});
+        if(!favorito) throw new NotFoundException('Favorito no encontrado');
+        if(favorito.usuario.id_usuario!==req.user.id){
+            throw new ForbiddenException('No tienes permiso para eliminar este favorito');
+        }
+        await this.favoritosRepository.remove(favorito);
+        return {message:"exito"};
+    }
+
+    async isFavorito(req, data){
+        const {id_recurso, tipo_recurso} = data;
+        const usuario = await this.usuarioRepository.findOneBy({id_usuario:req.user.id});
+        if(!usuario) throw new NotFoundException('Usuario no encontrado');
+        const favorito = await this.favoritosRepository.findOne({where:{usuario:{id_usuario:usuario.id_usuario},tipo_favorito:tipo_recurso,
+            ...(tipo_recurso==='empleo' && {empleo:{id_empleo:id_recurso}}),
+            ...(tipo_recurso==='servicio' && {servicio:{id_servicio:id_recurso}}),
+            ...(tipo_recurso==='pasantia' && {pasantia:{id_pasantia:id_recurso}}),
+        }});
+        return favorito?true:false;
     }
 }

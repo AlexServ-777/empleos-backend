@@ -4,7 +4,7 @@ import { UsuarioEntity } from "../entidades/usuarios.entity";
 import { PasantiaEntity } from "../entidades/pasantias.entity";
 import { EmpleosEntity } from "../entidades/empleos.entity";
 import { ServiciosEntity } from "../entidades/servicio.entity";
-import { FavoritosEntity } from "src/entidades/favoritos.entity";
+import { FavoritosEntity } from "../entidades/favoritos.entity";
 
 export const AppDataSource = new DataSource({
     type: 'mysql',

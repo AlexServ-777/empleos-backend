@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { console } from 'inspector';
-import { createPasantiaDTO } from 'src/dtos/pasantias.dto';
+import { createPasantiaDTO, infoPasantiaDTO, updatePasantiaDTO } from 'src/dtos/pasantias.dto';
 import { PasantiaEntity } from 'src/entidades/pasantias.entity';
 import { UsuarioEntity } from 'src/entidades/usuarios.entity';
 import { Not, Repository } from 'typeorm';
@@ -18,31 +18,31 @@ export class PasantiasSService {
     //GETS
     async getPasantias():Promise<any>{
         try{
-            return await this.pasantiaRepository.find();
+            const pasantias = await this.pasantiaRepository.find();
+            const pasantiasSanitizadas = await  Promise.all(pasantias.map(pasantia => new infoPasantiaDTO().sanitizar(pasantia)));
+            return pasantiasSanitizadas;
         }catch(e){
             throw new InternalServerErrorException('OCURRIO UN ERROR INESPERADO');
         }
     }
-    async getPasantiasUser(req){
+    async getPasantiasUser(req:any){
         const usuario = await this.usuarioRespository.findOneBy({id_usuario:req.user.id});
         if(!usuario) throw new NotFoundException('El usuario no existe');
         const pasantias = await this.pasantiaRepository.find({where:{user:usuario},relations:['user']});
         if(!pasantias) throw new NotFoundException('No existen recursos');
-        pasantias.forEach(element => {
-            delete element.user;
-        });
-        return pasantias;
+        const pasantiasSanitizadas = await Promise.all(pasantias.map(pasantia => new infoPasantiaDTO().sanitizar(pasantia)));
+        return pasantiasSanitizadas;
     }
 
-    async getPasantiaService(id){
+    async getPasantiaService(id:number){
         const pasantia = await this.pasantiaRepository.findOneBy({id_pasantia:id});
         if(!pasantia) throw new NotFoundException('Este recurso no existe');
-        console.log(pasantia);
-        return pasantia;
+        const pasantiaSanitizada = new infoPasantiaDTO().sanitizar(pasantia);
+        return pasantiaSanitizada;
     }
 
     //POSTS
-    async createPasantia(data:createPasantiaDTO, req){
+    async createPasantia(data:createPasantiaDTO, req:any){
             const user = await this.usuarioRespository.findOneBy({id_usuario:req.user.id});
             if(!user) throw new NotFoundException('El usuario no existe');
             data.user = user;
@@ -53,7 +53,7 @@ export class PasantiasSService {
     }
 
     //PUTS
-    async updatePasantia(data,id,req){
+    async updatePasantia(data:updatePasantiaDTO,id:number,req:any){
         const user = await this.usuarioRespository.findOneBy({id_usuario:req.user.id});
         if(!user) throw new NotFoundException('El usuario ya no existe');
         const pasantia = await this.pasantiaRepository.findOne({where:{id_pasantia:id},relations:['user']});
