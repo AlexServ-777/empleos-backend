@@ -1,4 +1,3 @@
-import { timestamp } from 'rxjs';
 import { UsuarioEntity } from './usuarios.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { FavoritosEntity } from './favoritos.entity';
@@ -14,8 +13,8 @@ export class PasantiaEntity {
     @Column({nullable:false,length:50})
     categoria:string;
 
-    @Column({nullable:false})
-    num_telf: number;
+    @Column({nullable:false, length:30})
+    num_telf: string;
 
     @Column({ nullable: false,length:50 })
     ubicacion: string;

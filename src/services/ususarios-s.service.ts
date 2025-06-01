@@ -30,6 +30,16 @@ export class UsusariosSService {
 
     ) {}
 
+    verificarToken(req:any){
+        const token = req.headers.authorization.split(' ')[1];
+        const decoded = this.jwtService.verify(token);
+        if(!decoded){
+            throw new ForbiddenException('Token invalido');
+        }
+        return {message:"exito"};
+    }
+
+    //obtener todos los usuarios
     getUsuarios(req:any) {
         const rolUser = req.user.rol;
         if(rolUser==='admin'){
@@ -72,8 +82,7 @@ export class UsusariosSService {
             rol:user.rol
         }
         const token = this.jwtService.sign(payload); //codificar el cuerpo payload
-        //enviar el token al frontend
-        return {message:"exito al logearse", token}
+        return token;
     }
     //creacion de usuarios que no se permiten crear admins
     async crearUsuario(usuarioData: CreateUsuarioDto) {
@@ -165,7 +174,7 @@ export class UsusariosSService {
         });
 
         if (favoritoExistente) {
-            throw new HttpException('Este recurso ya está en favoritos', 400);
+            return {message:"Ya esta en favoritos", id_favorito:favoritoExistente.id_favorito, statusCode:400};
         }
 
         const newFavorito = this.favoritosRepository.create({
@@ -211,10 +220,10 @@ export class UsusariosSService {
             throw new ForbiddenException('No tienes permiso para eliminar este favorito');
         }
         await this.favoritosRepository.remove(favorito);
-        return {message:"exito"};
+        return {message:"Se elimino de favoritos"};
     }
 
-    async isFavorito(req, data){
+    async isFavorito(req:any, data:any){
         const {id_recurso, tipo_recurso} = data;
         const usuario = await this.usuarioRepository.findOneBy({id_usuario:req.user.id});
         if(!usuario) throw new NotFoundException('Usuario no encontrado');

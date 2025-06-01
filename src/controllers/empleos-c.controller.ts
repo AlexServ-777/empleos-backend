@@ -7,7 +7,7 @@ import { createEmpleoDTO } from 'src/dtos/empleos.dto';
 export class EmpleosCController {
     constructor(private readonly appService:EmpleosSService){}
 
-    @Get('listar')
+    @Get('getPublic')
     async getEmpleos():Promise<any>{ //sin token, publico
         return await this.appService.getEmpleos();
     }
@@ -31,7 +31,7 @@ export class EmpleosCController {
 
     @UseGuards(JwtGuardConf)
     @Put('update-empleo/:id') //con parametro de url
-    async updateEmpCon(@Body() data,@Req() req:Request,@Param('id') id:string){
+    async updateEmpCon(@Body() data:any,@Req() req:Request,@Param('id') id:string){
         return await this.appService.updateEmpleoService(data,req,Number(id));
     }
 

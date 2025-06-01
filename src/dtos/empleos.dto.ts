@@ -1,5 +1,6 @@
 import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsObject, isString, IsString, MaxLength } from "@nestjs/class-validator";
 import { Exclude, plainToInstance } from "class-transformer";
+import { isDate } from "util/types";
 
 
 export class createEmpleoDTO{
@@ -16,9 +17,9 @@ export class createEmpleoDTO{
     @IsNotEmpty()
     salario:number;
 
-    @IsNumber()
+    @IsString()
     @IsNotEmpty()
-    num_telf: number;
+    num_telf: string;
     
     @IsString()
     @MaxLength(30)
@@ -49,9 +50,6 @@ export class createEmpleoDTO{
     @IsNotEmpty()
     descripcion: string;
 
-    @IsBoolean()
-    isActive: boolean;
-
     @IsObject()
     @IsNotEmpty()
     user:object;
@@ -59,20 +57,24 @@ export class createEmpleoDTO{
 
 export class updateEmpleoDTO extends createEmpleoDTO{
     //datos de la clase newEmpleoDTO    
+    @IsBoolean()
+    isActive:boolean;
 }
 
 export class getEmpleoDTO extends createEmpleoDTO{
     @IsDate()
     @IsNotEmpty()
     fecha_creacion: Date;
-
+    
     @IsDate()
     @IsNotEmpty()
-    fecha_publicacion: Date;
+    fecha_modificacion:Date;
 
+    @IsBoolean()
+    isActive: boolean;
+    
     @IsString()
     @IsNotEmpty()
-    @MaxLength(50)
     id_empleo:string;
 }
 export class sanitizarEmpleoDTO{
@@ -93,7 +95,7 @@ export class sanitizarEmpleoDTO{
             requisitos:data.requisitos,
             descripcion:data.descripcion,
             fecha_creacion:data.fecha_creacion,
-            fecha_publicacion:data.fecha_publicacion,
+            fecha_modificacion:data.fecha_modificacion,
             isActive:data.isActive,
             user:{},
         };

@@ -16,8 +16,8 @@ export class EmpleosEntity {
     @Column({nullable: true })
     salario: number;
 
-    @Column({nullable:false, type:"bigint"})
-    num_telf: number;
+    @Column({nullable:false, length:30})
+    num_telf: string;
 
     @Column({ type:"enum",enum:['Presencial','Remoto','Hibrido'],nullable:false})
     modalidad:string

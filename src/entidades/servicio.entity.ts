@@ -13,11 +13,11 @@ export class ServiciosEntity {
     @Column({ nullable: false,length:50 })
     categoria: string;
 
-    @Column({nullable:false, type:"bigint"})
-    num_telf:number;
+    @Column({nullable:false})
+    num_telf:string;
 
     @Column({ nullable: false })
-    precio: number;
+    precio: string;
 
     @Column({ type:"enum",enum:['Presencial','Remoto','Hibrido'],nullable:false})
     modalidad: string;
@@ -41,7 +41,7 @@ export class ServiciosEntity {
     fecha_modificacion:Date;
 
     @Column({ nullable: false,default:true })
-    active: boolean;
+    isActive: boolean;
 
     @ManyToOne(()=>UsuarioEntity,(usuario)=>usuario.servicios,{onDelete:'CASCADE'})
     user:UsuarioEntity;

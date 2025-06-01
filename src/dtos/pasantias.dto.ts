@@ -1,4 +1,4 @@
-import { IsBoolean, IsDate, IsEnum, IsIn, IsNotEmpty, IsNumber, IsObject, IsString, MaxLength } from "@nestjs/class-validator";
+import { IsBoolean, IsDate, IsNotEmpty, IsObject, IsString, MaxLength } from "@nestjs/class-validator";
 
 export class createPasantiaDTO{
         
@@ -12,9 +12,9 @@ export class createPasantiaDTO{
         @MaxLength(50)
         categoria:string;
         
-        @IsNumber()
+        @IsString()
         @IsNotEmpty()
-        num_telf: number;
+        num_telf: string;
 
         @IsString()
         @IsNotEmpty()
@@ -59,19 +59,34 @@ export class createPasantiaDTO{
         @IsNotEmpty()
         fecha_fin:Date;
 
-        @IsBoolean()
-        isActive: boolean;
-
         @IsObject()
         @IsNotEmpty()
         user:object;
 }
 export class updatePasantiaDTO extends createPasantiaDTO{
-
+        @IsBoolean()
+        isActive: boolean;
 }
-export class infoPasantiaDTO{
+export class infoPasantiaDTO extends createPasantiaDTO{
+        @IsString()
+        @IsNotEmpty()
+        id_pasantia:string;
+
+        @IsBoolean()
+        isActive: boolean;
+        
+        @IsDate()
+        @IsNotEmpty()
+        fecha_creacion:Date;
+
+        @IsDate()
+        @IsNotEmpty()
+        fecha_modificacion:Date;
+}
+export class sanitizarPasantiaDTO{
         sanitizar(data:any){
-                const pasantia:createPasantiaDTO = {
+                const pasantia:infoPasantiaDTO = {
+                        id_pasantia:data.id_pasantia,
                         titulo:data.titulo,
                         categoria:data.categoria,
                         num_telf:data.num_telf,
@@ -85,6 +100,8 @@ export class infoPasantiaDTO{
                         fecha_inicio:data.fecha_inicio,
                         fecha_fin:data.fecha_fin,
                         isActive:data.isActive,
+                        fecha_creacion:data.fecha_creacion,
+                        fecha_modificacion:data.fecha_modificacion,
                         user:{},
                 }
                 return pasantia;

@@ -5,14 +5,16 @@ import { PasantiaEntity } from "../entidades/pasantias.entity";
 import { EmpleosEntity } from "../entidades/empleos.entity";
 import { ServiciosEntity } from "../entidades/servicio.entity";
 import { FavoritosEntity } from "../entidades/favoritos.entity";
+import { config } from "dotenv";
 
+config({path:'.develop.env'});
 export const AppDataSource = new DataSource({
     type: 'mysql',
-    host: 'localhost',
-    port: 3306,
-    username: 'root',  
-    password: '080403Alex',
-    database: 'empleosdb',
+    host: process.env.DB_HOST,
+    port: parseInt(process.env.DB_PORT!),
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
     entities: [UsuarioEntity, PasantiaEntity,EmpleosEntity,ServiciosEntity,FavoritosEntity],
     synchronize: true,
     migrations: [join(__dirname,'/../migrations/*.ts')], //muy sensible, tratar de no tocar, mas que todo son los slash

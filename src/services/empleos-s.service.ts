@@ -45,6 +45,7 @@ export class EmpleosSService {
     }
 
     async updateEmpleoService(data:updateEmpleoDTO, req:any,id:number){
+        console.log(data);
         const user = await this.usuarioRepository.findOneBy({id_usuario:req.user.id})
         if(!user) throw new NotFoundException('El usuario ya no existe');
         const empleo = await this.empleosRepository.findOne({where:{id_empleo:id},relations:['user']}); 

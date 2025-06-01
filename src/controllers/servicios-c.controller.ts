@@ -8,7 +8,7 @@ export class ServiciosCController {
     constructor(@Inject(ServiciosSService)
     private readonly serviciosSService: ServiciosSService) {}
     //GETS
-    @Get('getServiciosAll')
+    @Get('getPublic')
     async get_Servicios_All_Controller() {
         return await this.serviciosSService.getServiciosAll();
     }

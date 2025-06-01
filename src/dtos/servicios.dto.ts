@@ -1,4 +1,4 @@
-import { IsDate, IsNotEmpty, IsNumber, IsObject, MaxLength } from "@nestjs/class-validator";
+import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsObject, MaxLength } from "@nestjs/class-validator";
 
 import { IsString } from "@nestjs/class-validator";
 
@@ -13,13 +13,15 @@ export class createServicioDTO{
     @MaxLength(50)
     categoria:string;
 
-    @IsNumber()
+    @IsString()
+    @MaxLength(20)
     @IsNotEmpty()
-    num_telf:number;
+    num_telf:string;
 
-    @IsNumber()
+    @IsString()
+    @MaxLength(20)
     @IsNotEmpty()
-    precio:number;
+    precio:string;
 
     @IsString()
     @IsNotEmpty()   
@@ -41,29 +43,36 @@ export class createServicioDTO{
     @MaxLength(50)
     modalidad:string;
     
-    @IsString()
-    @IsNotEmpty()
-    @MaxLength(50)
-    duracion:string;
-
-    @IsDate()
-    @IsNotEmpty()
-    fecha_inicio:Date;
-
-    @IsDate()
-    @IsNotEmpty()
-    fecha_fin:Date;
-    
     @IsObject()
     @IsNotEmpty()
     user:object;
 }
 export class updateServicioDTO extends createServicioDTO{
-
+    @IsBoolean()
+    @IsNotEmpty()
+    isActive:boolean;
 }
-export class getServicioDTO{
+export class getServicioDTO extends createServicioDTO{
+    @IsNumber()
+    @IsNotEmpty()
+    id_servicio:number;
+
+    @IsBoolean()
+    @IsNotEmpty()
+    isActive:boolean
+    
+    @IsDate()
+    @IsNotEmpty()
+    fecha_creacion:Date;
+    
+    @IsDate()
+    @IsNotEmpty()
+    fecha_modificacion:Date;
+}
+export class sanitizarServicioDTO{
     sanitizar(data:any){
-        const servicio:createServicioDTO = {
+        const servicio:getServicioDTO = {
+            id_servicio:data.id_servicio,
             titulo:data.titulo,
             categoria:data.categoria,
             num_telf:data.num_telf,
@@ -72,10 +81,10 @@ export class getServicioDTO{
             pais:data.pais,
             descripcion:data.descripcion,
             modalidad:data.modalidad,
-            duracion:data.duracion,
-            fecha_inicio:data.fecha_inicio,
-            fecha_fin:data.fecha_fin,
             user:{},
+            fecha_creacion:data.fecha_creacion,
+            fecha_modificacion:data.fecha_modificacion,
+            isActive:data.isActive
         }
         return servicio;
     }

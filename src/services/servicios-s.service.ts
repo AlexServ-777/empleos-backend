@@ -1,9 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ServiciosEntity } from '../entidades/servicio.entity';
 import { UsuarioEntity } from '../entidades/usuarios.entity';
 import { Repository } from 'typeorm';
-import { createServicioDTO, getServicioDTO, updateServicioDTO } from 'src/dtos/servicios.dto';
+import { createServicioDTO, sanitizarServicioDTO, updateServicioDTO } from 'src/dtos/servicios.dto';
 
 @Injectable()
 export class ServiciosSService {
@@ -17,27 +17,19 @@ export class ServiciosSService {
     async getServiciosAll(): Promise<any> {
         //public
         const servicios = await this.serviciosRepository.find();
-        const serviciosSanitizados = await Promise.all(servicios.map(servicio => new getServicioDTO().sanitizar(servicio)));
+        const serviciosSanitizados = await Promise.all(servicios.map(servicio => new sanitizarServicioDTO().sanitizar(servicio)));
         return serviciosSanitizados;
     }
     async getServicioOne(id:any){
         //public
         const servicio = await this.serviciosRepository.findOneBy({id_servicio:id});
-        const servicioSanitizado = new getServicioDTO().sanitizar(servicio);
+        const servicioSanitizado = new sanitizarServicioDTO().sanitizar(servicio);
         return servicioSanitizado;
     }
     async getServiciosUsuario(req:any){
-        const usuario = await this.usuarioEntity.findOneBy({id_usuario:req.user.id});
-        if(!usuario){throw new NotFoundException('El usuario ya no existe')}
-        const serviciosUser = await this.serviciosRepository.find({where:{user:usuario},relations:['user']});
-        if(!serviciosUser){throw new NotFoundException('El usuario no tiene servicios')}
-        if(serviciosUser[0].user.id_usuario === usuario.id_usuario|| usuario.rol === 'admin'){
-            const serviciosSanitizados = await Promise.all(serviciosUser.map(servicio => new getServicioDTO().sanitizar(servicio)));
-            return serviciosSanitizados;
-        }
-        else{
-            throw new NotFoundException('No tinenes permisos para esta accion');
-        }
+        const serviciosUser = await this.usuarioEntity.findOne({where:{id_usuario:req.user.id},relations:['servicios']});
+        const sanitizarServicios = await Promise.all(serviciosUser?.servicios.map(servicio=>new sanitizarServicioDTO().sanitizar(servicio))??[])
+        return sanitizarServicios;
     }
 
     //POSTS
@@ -57,12 +49,12 @@ export class ServiciosSService {
         if(!usuario){throw new NotFoundException('El usuario ya no existe')}
         const servicio = await this.serviciosRepository.findOne({where:{id_servicio:id},relations:['user']});
         if(!servicio){throw new NotFoundException('El servicio no existe')}
-        if(servicio.user.id_usuario===req.user.id_usuario|| usuario.rol === 'admin'){
+        if(servicio.user.id_usuario===req.user.id|| usuario.rol === 'admin'){
             await this.serviciosRepository.update(id,data);
             return{message:"Servicio actualizado"};
         }
         else{
-            throw new NotFoundException('No tienes permisos para esta accion');
+            throw new ForbiddenException('No tienes permisos para esta accion');
         }
     }
 

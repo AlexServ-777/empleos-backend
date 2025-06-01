@@ -9,7 +9,7 @@ export class PasantiasCController {
     constructor(private readonly pasantiaService: PasantiasSService){
     }
     //GETS
-    @Get('getPasantiasPublic')
+    @Get('getPublic')
     async getPasantiasController(){
         return this.pasantiaService.getPasantias();
     }

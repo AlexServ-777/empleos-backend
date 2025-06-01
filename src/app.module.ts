@@ -14,9 +14,8 @@ import { FavoritosEntity } from './entidades/favoritos.entity';
 
 @Module({
   imports: [
-    EmpleosModule,PasantiasModule,UsuariosModule,ServiciosEntity,
     ConfigModule.forRoot({
-      envFilePath: `.${process.env.NODE_ENV}.env`,
+      envFilePath: '.develop.env',
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
