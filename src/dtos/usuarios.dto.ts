@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, isObject, IsObject, IsString, MinLength } from "@nestjs/class-validator";
+import { IsEmail, IsNotEmpty, IsString, MinLength } from "@nestjs/class-validator";
 import {Exclude, Transform} from "class-transformer"
 
 export class loginUserDTO{

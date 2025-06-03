@@ -1,8 +1,5 @@
-import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsObject, isString, IsString, MaxLength } from "@nestjs/class-validator";
-import { Exclude, plainToInstance } from "class-transformer";
-import { isDate } from "util/types";
-
-
+import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsObject, IsString, MaxLength } from "@nestjs/class-validator";
+import { Exclude } from "class-transformer";
 export class createEmpleoDTO{
     @IsString()
     @MaxLength(50)

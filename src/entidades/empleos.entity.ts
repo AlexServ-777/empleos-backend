@@ -13,7 +13,7 @@ export class EmpleosEntity {
     @Column({nullable:false, length:50})
     categoria:string;
 
-    @Column({nullable: true })
+    @Column({nullable: true, type:"bigint" })
     salario: number;
 
     @Column({nullable:false, length:30})

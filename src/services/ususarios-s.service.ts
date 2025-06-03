@@ -9,11 +9,14 @@ import { EmpleosEntity } from '../entidades/empleos.entity';
 import { FavoritosEntity } from '../entidades/favoritos.entity';
 import { ServiciosEntity } from '../entidades/servicio.entity';
 import { PasantiaEntity } from '../entidades/pasantias.entity';
+import { parse } from 'cookie';
+import { Request, request } from 'express';
 @Injectable()
 export class UsusariosSService {    
     constructor(
         @InjectRepository(UsuarioEntity)
         private readonly usuarioRepository: Repository<UsuarioEntity>,
+
         private jwtService:JwtService,
 
         @InjectRepository(EmpleosEntity)
@@ -30,12 +33,16 @@ export class UsusariosSService {
 
     ) {}
 
-    verificarToken(req:any){
-        const token = req.headers.authorization.split(' ')[1];
-        const decoded = this.jwtService.verify(token);
+    async verificarToken(req:Request){
+        const token = req?.cookies['token']; //obtener el token de req httponly, con Request de Express
+        if(!token) throw new ForbiddenException('NO HAY UN TOKEN');
+        const decoded = await this.jwtService.verifyAsync(token); //verificar token
         if(!decoded){
+            //is invalid
+            console.log("invalid Token");
             throw new ForbiddenException('Token invalido');
         }
+        //is valid
         return {message:"exito"};
     }
 
@@ -204,7 +211,7 @@ export class UsusariosSService {
         }
 
         await this.favoritosRepository.save(newFavorito);
-        return { message: "Agregado a favoritos" };
+        return { message: "Agregado a favoritos",statusCode:200};
     }
     async getFavoritos(req){
         const usuario = await this.usuarioRepository.findOneBy({id_usuario:req.user.id});

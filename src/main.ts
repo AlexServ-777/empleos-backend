@@ -11,15 +11,16 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   app.use(morgan(':remote-addr - :method - :url - :status - :response-time ms'));
   app.enableCors(cors);
+
+
   app.use(cookieParser()); //para transformar el res en cookie del token csrf
-  
   // Configuración CSRF
   app.use(csurf({
     cookie: {
       key: '_csrf',
       path: '/',
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: false,
       maxAge: 10800 // 3 hora
     }
   }));

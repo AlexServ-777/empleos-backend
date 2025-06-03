@@ -118,7 +118,7 @@ export class UsuarioCController {
 
     @UseGuards(JwtGuardConf)
     @Post('isFavorito')
-    async isFavorito(@Req() req:Request, @Body() data){
+    async isFavorito(@Req() req:Request, @Body() data:any){
       return await this.appService.isFavorito(req,data);
     }
 }

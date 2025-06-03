@@ -1,5 +1,5 @@
 import { DataSource } from "typeorm";
-import { dirname, join } from "path";
+import { join } from "path";
 import { UsuarioEntity } from "../entidades/usuarios.entity";
 import { PasantiaEntity } from "../entidades/pasantias.entity";
 import { EmpleosEntity } from "../entidades/empleos.entity";
