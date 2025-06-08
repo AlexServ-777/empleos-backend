@@ -23,7 +23,7 @@ export class UsuarioEntity {
     @Column({length: 100, nullable: false})
     password: string;
 
-    @Column({nullable: false,type:'simple-enum', enum:["admin","empresa","usuario"], default:'usuario'})
+    @Column({nullable: false,type:'simple-enum', enum:["usuario","admin","empresa"], default:'usuario'})
     rol: string; //admin, empresa, usuario
 
     @Column({length:30, nullable:false})

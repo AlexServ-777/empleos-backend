@@ -29,6 +29,10 @@ export class createServicioDTO{
     ciudad:string;
 
     @IsString()
+    @MaxLength(50)
+    ubicacion:string;
+
+    @IsString()
     @IsNotEmpty()
     @MaxLength(50)
     pais:string;    
@@ -74,6 +78,7 @@ export class sanitizarServicioDTO{
             num_telf:data.num_telf,
             precio:data.precio,
             ciudad:data.ciudad,
+            ubicacion:data.ubicacion,
             pais:data.pais,
             descripcion:data.descripcion,
             modalidad:data.modalidad,

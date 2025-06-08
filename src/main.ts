@@ -17,7 +17,7 @@ async function bootstrap() {
   };
 
   const app = await NestFactory.create(AppModule,{
-    //httpsOptions,
+    httpsOptions,
   });
   const configService = app.get(ConfigService);
 
@@ -32,10 +32,12 @@ async function bootstrap() {
       },
     }),
   );
+  
 
   app.use(morgan(':remote-addr - :method - :url - :status - :response-time ms'));
   app.enableCors(cors);
 
+  
 
   app.use(cookieParser()); //para transformar el res en cookie del token csrf
   // Configuración CSRF

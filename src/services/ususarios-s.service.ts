@@ -1,4 +1,4 @@
-import { ConflictException, ForbiddenException, HttpException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, HttpException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UsuarioEntity } from '../entidades/usuarios.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -97,12 +97,16 @@ export class UsusariosSService {
     async crearUsuario(usuarioData: CreateUsuarioDto) {
         //validar que no se puedan crear usuarios admin
         if(usuarioData.rol==='admin'|| usuarioData?.rol==undefined||usuarioData.rol==null){ //si el rol fue alterado por x razon en el front validar aqui. Si el rol es undefined tiene accesso a admin asi que validar tambien eso
-            throw new ForbiddenException('no tienes autorizacion para crear un admin');
+            throw new ForbiddenException('no tienes autorizacion para esta accion');
         }
         //validar que el usuario no exista
-        const userExist = await this.usuarioRepository.findOneBy({email:usuarioData.email});
-        if(userExist){
-            throw new ConflictException('El usuario ya existe'); //409
+        const usuarioEmail = await this.usuarioRepository.findOneBy({email:usuarioData.email});
+        if(usuarioEmail){
+            throw new ConflictException('Este email ya esta registrado'); //409
+        }
+        const usuarioUsername = await this.usuarioRepository.findOneBy({nom_usuario:usuarioData.nom_usuario})
+        if(usuarioUsername){
+            throw new BadRequestException('El nombre de usuario ya esta en uso')
         }
         //encriptar la contrasena
         const password = usuarioData.password; //passwrod auxiliar

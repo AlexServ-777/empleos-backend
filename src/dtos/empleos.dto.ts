@@ -1,5 +1,5 @@
-import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsObject, IsString, MaxLength } from "@nestjs/class-validator";
-import { Exclude } from "class-transformer";
+import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsString, MaxLength } from "@nestjs/class-validator";
+
 export class createEmpleoDTO{
     @IsString()
     @MaxLength(50)
@@ -11,7 +11,6 @@ export class createEmpleoDTO{
     categoria:string;
     
     @IsNumber()
-    @IsNotEmpty()
     salario:number;
 
     @IsString()
@@ -29,7 +28,6 @@ export class createEmpleoDTO{
 
     @IsString()
     @MaxLength(50)
-    @IsNotEmpty()
     ubicacion:string;
 
     @IsString()

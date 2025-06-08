@@ -17,7 +17,6 @@ export class createPasantiaDTO{
         num_telf: string;
 
         @IsString()
-        @IsNotEmpty()
         @MaxLength(50)
         ubicacion: string;
     
