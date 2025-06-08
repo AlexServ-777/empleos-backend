@@ -44,7 +44,7 @@ async function bootstrap() {
       key: '_csrf',
       path: '/',
       httpOnly: false,
-      secure: false,
+      secure: true,
       maxAge: 10800, // 3 hora
       sameSite: 'none'
     }
