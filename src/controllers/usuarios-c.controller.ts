@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Req, Res, UseGuards, UsePipes } from '@nestjs/common';
 import { UsusariosSService } from '../services/ususarios-s.service';
 import { CreateUsuarioDto, loginUserDTO, UpdateUsuarioDto } from '../dtos/usuarios.dto';
 import { JwtGuardConf } from 'src/Zconfigs/jwt-guards';
@@ -40,15 +40,16 @@ export class UsuarioCController {
     }
 
     @Throttle({default:{limit:10, ttl:3600000}})
-    @Post('login')
+    @Post('login') //1 hora
+    @UsePipes()
     async login(@Body() user:loginUserDTO, @Res({passthrough:true}) res:Response):Promise<any>{
       const token = await this.appService.loginUser(user);
       res.cookie('token',token,{
         httpOnly:true,
         maxAge:30*24*60*60*1000, //30 dias
-        sameSite:'lax',
+        sameSite:'none',
         path:'/',
-        secure:false,
+        secure:true,
       })
       return {message:"login exitoso"}
     }

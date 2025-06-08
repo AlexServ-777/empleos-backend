@@ -55,6 +55,6 @@ export class PasantiaEntity {
     @ManyToOne(()=>UsuarioEntity,(user)=>user.pasantias,{onDelete:'CASCADE'})
     user?:UsuarioEntity;
 
-    @OneToMany(() => FavoritosEntity, (favorito) => favorito.pasantia)
+    @OneToMany(() => FavoritosEntity, (favorito) => favorito.pasantia, {cascade:true,onDelete:'CASCADE'})
     favoritos: FavoritosEntity[];
 }

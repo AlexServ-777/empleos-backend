@@ -5,10 +5,34 @@ import * as morgan from 'morgan';
 import { ConfigService } from '@nestjs/config';
 import * as csurf from 'csurf';
 import * as cookieParser from 'cookie-parser';
+import { ValidationPipe } from '@nestjs/common';
+import * as fs from "fs";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+
+  //config https
+  const httpsOptions = {
+    key: fs.readFileSync('./certificates/localhost-key.pem'),
+    cert: fs.readFileSync('./certificates/localhost.pem'),
+  };
+
+  const app = await NestFactory.create(AppModule,{
+    //httpsOptions,
+  });
   const configService = app.get(ConfigService);
+
+  // Configuración global de validación de DTOs
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+    }),
+  );
+
   app.use(morgan(':remote-addr - :method - :url - :status - :response-time ms'));
   app.enableCors(cors);
 
@@ -19,7 +43,7 @@ async function bootstrap() {
     cookie: {
       key: '_csrf',
       path: '/',
-      httpOnly: true,
+      httpOnly: false,
       secure: false,
       maxAge: 10800 // 3 hora
     }

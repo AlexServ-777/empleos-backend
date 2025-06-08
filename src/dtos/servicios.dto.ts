@@ -42,10 +42,6 @@ export class createServicioDTO{
     @IsNotEmpty()
     @MaxLength(50)
     modalidad:string;
-    
-    @IsObject()
-    @IsNotEmpty()
-    user:object;
 }
 export class updateServicioDTO extends createServicioDTO{
     @IsBoolean()
@@ -81,7 +77,6 @@ export class sanitizarServicioDTO{
             pais:data.pais,
             descripcion:data.descripcion,
             modalidad:data.modalidad,
-            user:{},
             fecha_creacion:data.fecha_creacion,
             fecha_modificacion:data.fecha_modificacion,
             isActive:data.isActive

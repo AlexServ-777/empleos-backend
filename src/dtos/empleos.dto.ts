@@ -46,10 +46,6 @@ export class createEmpleoDTO{
     @MaxLength(1000)
     @IsNotEmpty()
     descripcion: string;
-
-    @IsObject()
-    @IsNotEmpty()
-    user:object;
 }
 
 export class updateEmpleoDTO extends createEmpleoDTO{
@@ -75,8 +71,6 @@ export class getEmpleoDTO extends createEmpleoDTO{
     id_empleo:string;
 }
 export class sanitizarEmpleoDTO{
-    @Exclude()
-    user:object;
 
     async sanitizar(data:any):Promise<getEmpleoDTO>{
         const empleoSanitizado:getEmpleoDTO = {
@@ -94,7 +88,6 @@ export class sanitizarEmpleoDTO{
             fecha_creacion:data.fecha_creacion,
             fecha_modificacion:data.fecha_modificacion,
             isActive:data.isActive,
-            user:{},
         };
         return empleoSanitizado;
     }

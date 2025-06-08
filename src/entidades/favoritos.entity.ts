@@ -22,16 +22,16 @@ export class FavoritosEntity {
     })
     tipo_favorito: TipoFavorito;
 
-    @ManyToOne(() => UsuarioEntity, (usuario) => usuario.favoritos)
+    @ManyToOne(() => UsuarioEntity, (usuario) => usuario.favoritos, {onDelete:'CASCADE'})
     usuario: UsuarioEntity;
 
-    @ManyToOne(() => EmpleosEntity, { nullable: true })
+    @ManyToOne(() => EmpleosEntity, { nullable: true, onDelete:'CASCADE'})
     empleo?: EmpleosEntity;
 
-    @ManyToOne(() => ServiciosEntity, { nullable: true })
+    @ManyToOne(() => ServiciosEntity, { nullable: true, onDelete:'CASCADE'})
     servicio?: ServiciosEntity;
 
-    @ManyToOne(() => PasantiaEntity, { nullable: true })
+    @ManyToOne(() => PasantiaEntity, { nullable: true, onDelete:'CASCADE'})
     pasantia?: PasantiaEntity;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

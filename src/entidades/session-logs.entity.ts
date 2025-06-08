@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('session_logs')
-export class SessionFailedEntity{
+export class SessionLogs{
     @PrimaryGeneratedColumn()
     id_registro:number;
 

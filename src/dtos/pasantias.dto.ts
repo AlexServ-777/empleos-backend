@@ -58,10 +58,6 @@ export class createPasantiaDTO{
         @IsDate()
         @IsNotEmpty()
         fecha_fin:Date;
-
-        @IsObject()
-        @IsNotEmpty()
-        user:object;
 }
 export class updatePasantiaDTO extends createPasantiaDTO{
         @IsBoolean()
@@ -102,7 +98,6 @@ export class sanitizarPasantiaDTO{
                         isActive:data.isActive,
                         fecha_creacion:data.fecha_creacion,
                         fecha_modificacion:data.fecha_modificacion,
-                        user:{},
                 }
                 return pasantia;
         }

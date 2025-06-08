@@ -1,8 +1,7 @@
 import { Body, Controller, Delete, Get,Param,Post,Put,Req, UseGuards } from '@nestjs/common';
-import { createPasantiaDTO } from 'src/dtos/pasantias.dto';
+import { createPasantiaDTO, infoPasantiaDTO, updatePasantiaDTO } from 'src/dtos/pasantias.dto';
 import { PasantiasSService } from 'src/services/pasantias-s.service';
 import { JwtGuardConf } from 'src/Zconfigs/jwt-guards';
-import { Repository } from 'typeorm';
 
 @Controller('pasantias-c')
 export class PasantiasCController {
@@ -10,18 +9,18 @@ export class PasantiasCController {
     }
     //GETS
     @Get('getPublic')
-    async getPasantiasController(){
+    async getPasantiasController():Promise<infoPasantiaDTO[]>{
         return this.pasantiaService.getPasantias();
     }
 
     @UseGuards(JwtGuardConf)
     @Get('getPasantiasUser')
-    async getPasntiasUserController(@Req() req:Request){
+    async getPasntiasUserController(@Req() req:Request):Promise<infoPasantiaDTO[]>{
         return this.pasantiaService.getPasantiasUser(req);
     }
 
     @Get('getPasantia/:id')
-    async getPasantiaController(@Param('id') id:string){
+    async getPasantiaController(@Param('id') id:string):Promise<infoPasantiaDTO>{
         return this.pasantiaService.getPasantiaService(Number(id));
     }
 
@@ -35,13 +34,13 @@ export class PasantiasCController {
     //PUTS
     @UseGuards(JwtGuardConf)
     @Put('updatePasantia/:id')
-    async updatePasantiaController(@Body() Body,@Param('id') id, @Req() req: Request ){
+    async updatePasantiaController(@Body() Body:updatePasantiaDTO,@Param('id') id:number, @Req() req: Request ){
         return this.pasantiaService.updatePasantia(Body,id, req);
     }
     //DELETES
     @UseGuards(JwtGuardConf)
     @Delete('deletePasantia/:id')
-    async deletePasantiaController(@Req() req:Request, @Param('id') id){
+    async deletePasantiaController(@Req() req:Request, @Param('id') id:number){
         return this.pasantiaService.deletePasantia(req,id);
     }
 
