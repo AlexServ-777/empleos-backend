@@ -45,7 +45,8 @@ async function bootstrap() {
       path: '/',
       httpOnly: false,
       secure: false,
-      maxAge: 10800 // 3 hora
+      maxAge: 10800, // 3 hora
+      sameSite: 'none'
     }
   }));
 
