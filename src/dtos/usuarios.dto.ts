@@ -1,16 +1,18 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from "@nestjs/class-validator";
+import { IsEmail, IsNotEmpty, IsString, Max, MinLength } from "@nestjs/class-validator";
 import {Exclude, Transform} from "class-transformer"
+import { MaxLength } from "class-validator";
 
 export class loginUserDTO{
     @IsString()
     @IsNotEmpty()
     @IsEmail()
+    @MaxLength(50)
     @Transform(({value})=>value?.trim())
     readonly email:string;
 
     @IsString()
     @IsNotEmpty()
-    @MinLength(8)
+    @MaxLength(100)
     @Transform(({value})=>value?.trim())
     readonly password:string;
 }
@@ -18,38 +20,45 @@ export class loginUserDTO{
 export class CreateUsuarioDto {
     @IsString()
     @IsNotEmpty()
+    @MaxLength(50)
     @Transform(({value})=>value?.trim())
     nombre: string;
 
     @IsString()
     @IsNotEmpty()
+    @MaxLength(50)
     @Transform(({value})=>value?.trim())
     apellido: string;
 
     @IsString()
     @IsNotEmpty()
+    @MaxLength(50)
     @Transform(({value})=>value?.trim())
     nom_usuario: string;
     
     @IsString()
     @IsEmail()
     @IsNotEmpty()
+    @MaxLength(50)
     @Transform(({value})=>value?.trim())
     email: string;
 
     @IsString()
     @MinLength(8)
     @IsNotEmpty()
+    @MaxLength(100)
     @Transform(({value})=>value?.trim())
     password: string;
 
     @IsString()
     @IsNotEmpty()
+    @MaxLength(20)
     @Transform(({value})=>value?.trim())
     rol:string;
 
     @IsString()
     @IsNotEmpty()
+    @MaxLength(30)
     @Transform(({value})=>value?.trim())
     pais:string;
 }
@@ -57,27 +66,32 @@ export class CreateUsuarioDto {
 export class UpdateUsuarioDto {
     @IsString()
     @IsNotEmpty()
+    @MaxLength(50)
     @Transform(({value})=>value?.trim())
     readonly nombre: string;
 
     @IsString()
     @IsNotEmpty()
+    @MaxLength(50)
     @Transform(({value})=>value?.trim())
     readonly apellido: string;
 
     @IsString()
     @IsNotEmpty()
+    @MaxLength(50)
     @Transform(({value})=>value?.trim())
     readonly nom_usuario: string;
 
     @IsString()
     @IsNotEmpty()
     @IsEmail()
+    @MaxLength(50)
     @Transform(({value})=>value?.trim())
     readonly email: string;
 
     @IsString()
     @IsNotEmpty()
+    @MaxLength(20)
     @Transform(({value})=>value?.trim())
     readonly rol:string;
 }
