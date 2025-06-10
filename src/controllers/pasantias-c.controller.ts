@@ -8,9 +8,9 @@ export class PasantiasCController {
     constructor(private readonly pasantiaService: PasantiasSService){
     }
     //GETS
-    @Get('getPublic')
-    async getPasantiasController():Promise<infoPasantiaDTO[]>{
-        return this.pasantiaService.getPasantias();
+    @Get('getPublic/:pais')
+    async getPasantiasController(@Param('pais') pais:string):Promise<infoPasantiaDTO[]>{
+        return this.pasantiaService.getPasantias(pais);
     }
 
     @UseGuards(JwtGuardConf)
@@ -35,13 +35,18 @@ export class PasantiasCController {
     @UseGuards(JwtGuardConf)
     @Put('updatePasantia/:id')
     async updatePasantiaController(@Body() Body:updatePasantiaDTO,@Param('id') id:number, @Req() req: Request ){
-        return this.pasantiaService.updatePasantia(Body,id, req);
+        return await this.pasantiaService.updatePasantia(Body,id, req);
     }
     //DELETES
     @UseGuards(JwtGuardConf)
     @Delete('deletePasantia/:id')
     async deletePasantiaController(@Req() req:Request, @Param('id') id:number){
-        return this.pasantiaService.deletePasantia(req,id);
+        return await this.pasantiaService.deletePasantia(req,id);
     }
 
+    @UseGuards(JwtGuardConf)
+    @Put('renovation/:id')
+    async renovation(@Param('id') id:string){
+        return await this.pasantiaService.renovarPasantia(Number(id));
+    }
 }

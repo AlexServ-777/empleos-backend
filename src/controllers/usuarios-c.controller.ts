@@ -60,9 +60,9 @@ export class UsuarioCController {
       res.clearCookie('token',{
         httpOnly:true,
         maxAge:0,
-        sameSite:'lax',
+        sameSite:'none',
         path:'/',
-        secure:false,
+        secure:true,
       });
       return {message:"logout exitoso"}
     }

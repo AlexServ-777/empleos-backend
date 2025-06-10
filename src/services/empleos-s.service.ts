@@ -15,8 +15,8 @@ export class EmpleosSService {
         private readonly usuarioRepository : Repository<UsuarioEntity>, //instanciamos la entidad usuario
     ){}
     //gets
-    async getEmpleos():Promise<any>{
-        const empleos = await this.empleosRepository.find(); //buscamos todos los empleos
+    async getEmpleos(pais:string):Promise<any>{
+        const empleos = await this.empleosRepository.find({where:{pais:pais}}); //buscamos todos los empleos
         const empleosSanitizados = await Promise.all(empleos.map(empleo => new sanitizarEmpleoDTO().sanitizar(empleo))); //sanitizamos cada empleos
         return empleosSanitizados;
     }
@@ -73,5 +73,9 @@ export class EmpleosSService {
         else{
             throw new ForbiddenException('No tienes autorizacion para hacer esto');
         }
+    }
+
+    async renovarEmpleo(id:number){
+        await this.empleosRepository.update(id,{});
     }
 }

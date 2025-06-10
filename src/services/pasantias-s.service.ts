@@ -16,9 +16,9 @@ export class PasantiasSService {
     
     //GETS
     //obtener las pasantias para el publico
-    async getPasantias():Promise<any>{
+    async getPasantias(pais:string):Promise<any>{
         try{
-            const pasantias = await this.pasantiaRepository.find(); //buscamos todas las pasantia
+            const pasantias = await this.pasantiaRepository.find({where:{pais:pais}}); //buscamos todas las pasantia
             const pasantiasSanitizadas = await  Promise.all(pasantias.map(pasantia => new sanitizarPasantiaDTO().sanitizar(pasantia))); //sanitizar cada pasantia
             return pasantiasSanitizadas;
         }catch(e){
@@ -84,4 +84,7 @@ export class PasantiasSService {
         }
     }
 
+    async renovarPasantia(id:number){
+        await this.pasantiaRepository.update(id,{});
+    }
 }

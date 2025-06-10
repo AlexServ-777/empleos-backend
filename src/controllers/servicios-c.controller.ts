@@ -9,9 +9,9 @@ export class ServiciosCController {
     private readonly serviciosSService: ServiciosSService) {}
     
     //GETS
-    @Get('getPublic')
-    async get_Servicios_All_Controller():Promise<getServicioDTO[]> {
-        return await this.serviciosSService.getServiciosAll();
+    @Get('getPublic/:pais')
+    async get_Servicios_All_Controller(@Param('pais') pais:string):Promise<getServicioDTO[]> {
+        return await this.serviciosSService.getServiciosAll(pais);
     }
     @Get('getServicioOne/:id')
     async get_Servicio_Controller(@Param('id') id:string):Promise<getServicioDTO>{
@@ -42,6 +42,12 @@ export class ServiciosCController {
     @Delete('deleteServicio/:id')
     async delete_Servicio_Controller(@Param('id') id:string, @Req() req:any){
         return await this.serviciosSService.deleteServicio(id,req);
+    }
+
+    @UseGuards(JwtGuardConf)
+    @Put('renovation/:id')
+    async renovation(@Param('id') id:string){
+        return await this.serviciosSService.renovarServicio(Number(id));
     }
 }
 

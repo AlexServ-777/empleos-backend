@@ -11,6 +11,7 @@ import { AppDataSource } from './Zconfigs/data-source';
 import { ServiciosModule } from './modulos/servicios.module';
 import { ServiciosEntity } from './entidades/servicio.entity';
 import { FavoritosEntity } from './entidades/favoritos.entity';
+import { CronsModule } from './modulos/crons.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { FavoritosEntity } from './entidades/favoritos.entity';
     ServiciosModule,
     PasantiasModule,
     UsuariosModule,
+    CronsModule,
   ],
 })
 export class AppModule {}

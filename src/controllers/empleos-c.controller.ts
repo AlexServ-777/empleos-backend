@@ -7,9 +7,9 @@ import { createEmpleoDTO, getEmpleoDTO, updateEmpleoDTO } from '../dtos/empleos.
 export class EmpleosCController {
     constructor(private readonly appService:EmpleosSService){}
 
-    @Get('getPublic')
-    async getEmpleos():Promise<getEmpleoDTO[]>{ //sin token, publico
-        return await this.appService.getEmpleos();
+    @Get('getPublic/:pais')
+    async getEmpleos(@Param('pais') pais:string):Promise<getEmpleoDTO[]>{ //sin token, publico
+        return await this.appService.getEmpleos(pais);
     }
 
     @UseGuards(JwtGuardConf)
@@ -39,5 +39,11 @@ export class EmpleosCController {
     @Delete('delete-empleo/:id') //con parametro de url
     async deleteEmpleo(@Req() req:Request, @Param('id') id:string){
         return await this.appService.deleteEmpleoService(req,Number(id));
+    }
+
+    @UseGuards(JwtGuardConf)
+    @Put('renovation/:id')
+    async renovar(@Param('id') id:string){
+        return await this.appService.renovarEmpleo(Number(id));
     }
 }

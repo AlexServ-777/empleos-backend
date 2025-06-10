@@ -14,9 +14,9 @@ export class ServiciosSService {
         private readonly usuarioEntity: Repository<UsuarioEntity>, //instanciamos la entidad para ser usada en este servicio
     ){}
     //GETS
-    async getServiciosAll(): Promise<any> {
+    async getServiciosAll(pais:string): Promise<any> {
         //public
-        const servicios = await this.serviciosRepository.find(); //busca todos los servicios
+        const servicios = await this.serviciosRepository.find({where:{pais:pais}}); //busca todos los servicios
         const serviciosSanitizados = await Promise.all(servicios.map(servicio => new sanitizarServicioDTO().sanitizar(servicio))); //sanitiza todos los servicios para no enviar datos sensibles
         return serviciosSanitizados; 
     }
@@ -71,5 +71,9 @@ export class ServiciosSService {
         else{
             throw new NotFoundException('No tienes permisos para esta accion'); //si este recurso no le pertenece al usuario
         }
+    }
+
+    async renovarServicio(id:number){
+        await this.serviciosRepository.update(id,{});
     }
 }
