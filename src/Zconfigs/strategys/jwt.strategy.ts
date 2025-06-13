@@ -9,7 +9,7 @@ export class HttpStrategy extends PassportStrategy(Strategy, 'jwt') {
         super({
             jwtFromRequest: ExtractJwt.fromExtractors([
                 (req:Request)=>{
-                    const data = req?.cookies['token'];
+                    const data = req?.cookies['tokenJWT'];
                     if(!data) return null;
                     return data;
                 }

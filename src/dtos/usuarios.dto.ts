@@ -39,7 +39,7 @@ export class CreateUsuarioDto {
     @IsString()
     @IsEmail()
     @IsNotEmpty()
-    @MaxLength(50)
+    @MaxLength(75)
     @Transform(({value})=>value?.trim())
     email: string;
 

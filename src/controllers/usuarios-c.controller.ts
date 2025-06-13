@@ -1,25 +1,13 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Req, Res, UseGuards, UsePipes } from '@nestjs/common';
 import { UsusariosSService } from '../services/ususarios-s.service';
-import { CreateUsuarioDto, loginUserDTO, UpdateUsuarioDto } from '../dtos/usuarios.dto';
-import { JwtGuardConf } from 'src/Zconfigs/jwt-guards';
+import { CreateUsuarioDto, UpdateUsuarioDto } from '../dtos/usuarios.dto';
+import { JwtGuardConf } from '../Zconfigs/jwt-guards';
 import { Throttle } from '@nestjs/throttler';
-import { Request, Response } from 'express';
+import { Request} from 'express';
 
 @Controller('usuarios-c')
 export class UsuarioCController {
     constructor(private readonly appService: UsusariosSService) {}
-
-    @Get('csrf-token')
-    getCsrfToken(@Req() req: Request) {
-        return {
-            token: req.csrfToken()
-        };
-    }
-
-    @Get('verificar-token')
-    verificarToken(@Req() req:Request){
-      return this.appService.verificarToken(req);
-    }
 
     @UseGuards(JwtGuardConf)
     @Get('listar')
@@ -37,34 +25,6 @@ export class UsuarioCController {
     @Get('pais')
     getPaisUser(@Req() req:Request):Promise<any>{
       return this.appService.getPaisUser(req);
-    }
-
-    @Throttle({default:{limit:10, ttl:3600000}})
-    @Post('login') //1 hora
-    @UsePipes()
-    async login(@Body() user:loginUserDTO, @Res({passthrough:true}) res:Response):Promise<any>{
-      const token = await this.appService.loginUser(user);
-      res.cookie('token',token,{
-        httpOnly:true,
-        maxAge:30*24*60*60*1000, //30 dias
-        sameSite:'none',
-        path:'/',
-        secure:true,
-      })
-      return {message:"login exitoso"}
-    }
-
-    @UseGuards(JwtGuardConf)
-    @Post('logout')
-    async logout(@Res({passthrough:true}) res:Response){
-      res.clearCookie('token',{
-        httpOnly:true,
-        maxAge:0,
-        sameSite:'none',
-        path:'/',
-        secure:true,
-      });
-      return {message:"logout exitoso"}
     }
 
     @Throttle({default:{limit:10, ttl:3600000}})

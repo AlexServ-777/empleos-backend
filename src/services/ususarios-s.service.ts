@@ -2,22 +2,17 @@ import { BadRequestException, ConflictException, ForbiddenException, HttpExcepti
 import { UsuarioEntity } from '../entidades/usuarios.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUsuarioDto, loginUserDTO, UpdateUsuarioDto, userInfoDto} from '../dtos/usuarios.dto';
+import { CreateUsuarioDto, UpdateUsuarioDto, userInfoDto} from '../dtos/usuarios.dto';
 import {hash,compare} from 'bcryptjs';
-import { JwtService } from '@nestjs/jwt';
 import { EmpleosEntity } from '../entidades/empleos.entity';
 import { FavoritosEntity } from '../entidades/favoritos.entity';
 import { ServiciosEntity } from '../entidades/servicio.entity';
 import { PasantiaEntity } from '../entidades/pasantias.entity';
-import { Request} from 'express';
 @Injectable()
 export class UsusariosSService {    
     constructor(
         @InjectRepository(UsuarioEntity)
-        private readonly usuarioRepository: Repository<UsuarioEntity>,
-
-        private jwtService:JwtService, //instanciamos el jwtService de la clase JwtService que contiene funcioens para el token
-
+        private readonly usuarioRepository: Repository<UsuarioEntity>, //instanciamos el jwtService de la clase JwtService que contiene funcioens para el token
         @InjectRepository(EmpleosEntity)
         private readonly empleosRepository: Repository<EmpleosEntity>,
 
@@ -31,20 +26,6 @@ export class UsusariosSService {
         private readonly pasantiasRepository: Repository<PasantiaEntity>,
 
     ) {}
-
-    async verificarToken(req:Request){
-        const token = req?.cookies['token']; //obtener el token de req httponly, con Request de Express
-        if(!token) throw new UnauthorizedException('NO HAY UN TOKEN'); //si es vacio osea undefined retornar que no hay autorizacion
-        const decoded = await this.jwtService.verifyAsync(token); //verificar token
-        if(!decoded){
-            //no es validio
-            console.log("invalid Token");
-            throw new ForbiddenException('Token invalido');
-        }
-        //Es valido 200
-        return {message:"exito"};
-    }
-
     //obtener la info de todos los usuarios solo para admin
     getUsuarios(req:any) {
         const rolUser = req.user.rol;
@@ -74,23 +55,6 @@ export class UsusariosSService {
         const user = await this.usuarioRepository.findOne({select:['pais'],where:{id_usuario:req.user.id}}); //obtenemos el pais del user
         if(!user) throw new NotFoundException('El usuario no existe');
         return {pais:user.pais};
-    }
-
-    async loginUser(usuarioData:loginUserDTO){
-        const {email,password} = usuarioData; //obtenemos los datos del logeo del front
-        const user = await this.usuarioRepository.findOne({ where: { email } }); //buscamos al usuario segun su email
-        if(!user) throw new HttpException('el usuario no existe',404); //si no existe 404
-        const passValidate = await compare(password,user?.password); //si existe entonces compara la contrasena encripta con la contrasea del logeo del front
-        if(!passValidate) throw new HttpException('usuario o contrasena incorrectos',404); //si no coindicen entonces retornar contrasena incorrecta
-        
-        //si todo fue valido crear el token para darle una sesion al user con el token
-        const payload={ //el cuerpo del token 
-            id:user.id_usuario,
-            nom_user: user.nom_usuario,
-            rol:user.rol
-        }
-        const token = this.jwtService.sign(payload); //codificar el cuerpo payload
-        return token; //retornamos el token
     }
 
     //creacion de usuarios que no se permiten crear admins

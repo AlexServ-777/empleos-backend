@@ -12,6 +12,7 @@ import { ServiciosModule } from './modulos/servicios.module';
 import { ServiciosEntity } from './entidades/servicio.entity';
 import { FavoritosEntity } from './entidades/favoritos.entity';
 import { CronsModule } from './modulos/crons.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { CronsModule } from './modulos/crons.module';
     PasantiasModule,
     UsuariosModule,
     CronsModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
