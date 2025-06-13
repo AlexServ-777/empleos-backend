@@ -61,7 +61,6 @@ export class AuthController {
     @Get('google/callback')
     async googleCallback(@Req() req:any, @Res() res: Response) {
         const email = req.user.email;
-        console.log(email);
         const token = await this.auth_service.loginUserGoogle(email);
         res.cookie('tokenJWT', token, {
             httpOnly: true,
@@ -71,16 +70,5 @@ export class AuthController {
             maxAge: 30 * 24 * 60 * 60 * 1000 //30 dias
         });
         return res.redirect(process.env.url_front!)
-    }
-    @Get('pais')
-    async sendPaisCookie(@Res() res:Response){
-        res.cookie('country','',{
-            sameSite:'none',
-            maxAge: 86400000,
-            httpOnly:false,
-            secure: true,
-            path:'/'
-        })
-        return res.json({ message: 'pais success' });
     }
 }
