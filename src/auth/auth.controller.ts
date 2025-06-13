@@ -72,4 +72,15 @@ export class AuthController {
         });
         return res.redirect(process.env.url_front!)
     }
+    @Get('pais')
+    async sendPaisCookie(@Res() res:Response){
+        res.cookie('country','',{
+            sameSite:'none',
+            maxAge: 86400000,
+            httpOnly:false,
+            secure: true,
+            path:'/'
+        })
+        return res.json({ message: 'pais success' });
+    }
 }
