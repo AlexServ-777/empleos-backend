@@ -8,6 +8,7 @@ import * as cookieParser from 'cookie-parser';
 import { ValidationPipe } from '@nestjs/common';
 import * as fs from "fs";
 
+
 async function bootstrap() {
 
   //config https
@@ -33,11 +34,12 @@ async function bootstrap() {
     }),
   );
   
-
+  //morgab para los logs de la consola
   app.use(morgan(':remote-addr - :method - :url - :status - :response-time ms'));
   app.enableCors(cors);
 
   app.use(cookieParser()); //para transformar el res en cookie del token csrf
+  
   // Configuración CSRF
   app.use(csurf({
     cookie: {
@@ -61,10 +63,10 @@ async function bootstrap() {
     }
     next(err);
   });
-
+  //poner una url global, en este caso api
   app.setGlobalPrefix('api');
   
-  await app.listen(configService.get('PORT')??"8000",'0.0.0.0');
-  console.log(`Application is running on: ${await app.getUrl()}`);
+  await app.listen(configService.get('PORT')??"8000",'0.0.0.0'); //asignacion del puerto
+  console.log(`Application is running on: ${await app.getUrl()}`); //mostrar el puerto
 }
 bootstrap();

@@ -1,5 +1,5 @@
-import { Body, Controller, Get,Post, Req, Res, UseGuards, UsePipes } from '@nestjs/common';
-import { Throttle } from '@nestjs/throttler';
+import { Body, Controller, Get,Param,Post, Req, Res, UseGuards, UsePipes } from '@nestjs/common';
+import { SkipThrottle, Throttle, ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { loginUserDTO } from '../dtos/usuarios.dto';
 import { AuthService } from './auth.service';
 import { GoogleAuthGuard } from '../Zconfigs/google-auth/google-auth.guard';
@@ -12,19 +12,20 @@ export class AuthController {
         private auth_service: AuthService
     ) { }
 
+    @SkipThrottle() //no tiene limites de llamadas
     @Get('csrf-token')
     getCsrfToken(@Req() req: Request) {
         return {
             token: req.csrfToken()
         };
     }
+    @SkipThrottle() //no tiene limites de llamadas
     @Get('verificar-token')
     verificarToken(@Req() req: Request) {
         return this.auth_service.verificarToken(req);
     }
     //SignIn y SignOut
 
-    @Throttle({ default: { limit: 10, ttl: 3600000 } })
     @Post('login') //1 hora
     @UsePipes()
     async login(@Body() user: loginUserDTO, @Res({ passthrough: true }) res: Response): Promise<any> {
@@ -70,5 +71,10 @@ export class AuthController {
             maxAge: 30 * 24 * 60 * 60 * 1000 //30 dias
         });
         return res.redirect(process.env.url_front!)
+    }
+
+    @Get('forgotPassword/:email')
+    async forgotPassword_controller(@Param('email') email:string){
+        return await this.auth_service.forgotPassword_send_email(email);
     }
 }

@@ -6,7 +6,7 @@ export class loginUserDTO{
     @IsString()
     @IsNotEmpty()
     @IsEmail()
-    @MaxLength(50)
+    @MaxLength(75)
     @Transform(({value})=>value?.trim())
     readonly email:string;
 
@@ -85,7 +85,7 @@ export class UpdateUsuarioDto {
     @IsString()
     @IsNotEmpty()
     @IsEmail()
-    @MaxLength(50)
+    @MaxLength(75)
     @Transform(({value})=>value?.trim())
     readonly email: string;
 

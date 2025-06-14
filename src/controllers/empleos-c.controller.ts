@@ -2,7 +2,9 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Req, Use
 import { EmpleosSService } from '../services/empleos-s.service';
 import { JwtGuardConf } from '../Zconfigs/jwt-guards';
 import { createEmpleoDTO, getEmpleoDTO, updateEmpleoDTO } from '../dtos/empleos.dto';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Controller('empleos-c')
 export class EmpleosCController {
     constructor(private readonly appService:EmpleosSService){}
@@ -17,6 +19,7 @@ export class EmpleosCController {
     async getEmpleosUserController(@Req() req:Request):Promise<getEmpleoDTO[]>{
         return await this.appService.getEmpleosUser(req);       
     }
+
     @Get('infoEmpleo/:id')
     async getInfoEmpleo(@Param('id') id:string):Promise<getEmpleoDTO>{
         return await this.appService.getEmpleoInformacion(Number(id));
@@ -28,6 +31,7 @@ export class EmpleosCController {
         return this.appService.createEmpleo(body, req);
     }
 
+    
     @UseGuards(JwtGuardConf)
     @Put('update-empleo/:id') //con parametro de url
     async updateEmpCon(@Body() data:updateEmpleoDTO,@Req() req:Request,@Param('id') id:string){

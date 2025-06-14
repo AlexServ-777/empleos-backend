@@ -1,8 +1,10 @@
 import { Body, Controller, Delete, Get,Param,Post,Put,Req, UseGuards } from '@nestjs/common';
+import { SkipThrottle } from '@nestjs/throttler';
 import { createPasantiaDTO, infoPasantiaDTO, updatePasantiaDTO } from 'src/dtos/pasantias.dto';
 import { PasantiasSService } from 'src/services/pasantias-s.service';
 import { JwtGuardConf } from 'src/Zconfigs/jwt-guards';
 
+@SkipThrottle()
 @Controller('pasantias-c')
 export class PasantiasCController {
     constructor(private readonly pasantiaService: PasantiasSService){
@@ -13,6 +15,7 @@ export class PasantiasCController {
         return this.pasantiaService.getPasantias(pais);
     }
 
+    
     @UseGuards(JwtGuardConf)
     @Get('getPasantiasUser')
     async getPasntiasUserController(@Req() req:Request):Promise<infoPasantiaDTO[]>{

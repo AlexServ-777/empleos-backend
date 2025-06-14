@@ -9,14 +9,27 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import googleOauthConfig from '../Zconfigs/google-oauth.config';
 import { PassportModule } from '@nestjs/passport';
+import { Forgot_Password_Entity } from '../entidades/forgot-password.entity';
+import { Resend } from 'resend';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService,HttpStrategy,GoogleStrategy],
+  providers: [
+    AuthService,
+    HttpStrategy,
+    GoogleStrategy, 
+    Resend,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
+    } //throttle lo hace global para el controlador y para que algunos endpoints no sean afectados poner @SkypThrottle()
+  ],
   imports:[
     ConfigModule,
     PassportModule,
-    TypeOrmModule.forFeature([UsuarioEntity]),
+    TypeOrmModule.forFeature([UsuarioEntity, Forgot_Password_Entity]),
     JwtModule.registerAsync({  
       imports:[ConfigModule],
       useFactory:(configService:ConfigService)=>({
@@ -25,7 +38,13 @@ import { PassportModule } from '@nestjs/passport';
       }), 
       inject:[ConfigService]
     }),//jwt config
-    ConfigModule.forFeature(googleOauthConfig)
+    ThrottlerModule.forRoot({ //asigna la config de rate limits al controlador
+      throttlers: [{
+        ttl: 900000,
+        limit: 5
+      }]
+    }),
+    ConfigModule.forFeature(googleOauthConfig),
   ]
 })
 export class AuthModule {}

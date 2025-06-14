@@ -8,6 +8,9 @@ import { compare } from 'bcryptjs';
 import * as bcrypt from 'bcryptjs';
 import { Request } from 'express';
 import { randomUUID } from 'node:crypto';
+import { Resend } from 'resend';
+import { ConfigService } from '@nestjs/config';
+import { Forgot_Password_Entity } from 'src/entidades/forgot-password.entity';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +18,14 @@ export class AuthService {
         @InjectRepository(UsuarioEntity)
         private readonly usuarioRepository: Repository<UsuarioEntity>,
 
+        @InjectRepository(Forgot_Password_Entity)
+        private readonly forgotPassRepository: Repository<Forgot_Password_Entity>,
+
         private jwtService: JwtService,
+
+        private configService:ConfigService,
+        private resend:Resend = new Resend(this.configService.get<string>(process.env.RESEND_API_KEY!)),
+
     ) { }
 
     async verificarToken(req: Request) {
@@ -30,6 +40,7 @@ export class AuthService {
         //Es valido 200
         return { message: "exito" };
     }
+    
     async loginUser(usuarioData: loginUserDTO) {
         const { email, password } = usuarioData; //obtenemos los datos del logeo del front
         const user = await this.usuarioRepository.findOne({ where: { email } }); //buscamos al usuario segun su email
@@ -61,6 +72,7 @@ export class AuthService {
         return newUser;
     }
 
+    //inicio de sesion de google sin password
     async loginUserGoogle(email){
         const user = await this.usuarioRepository.findOneBy({email:email});
         if(!user) throw new NotFoundException('El usuario no existe');
@@ -71,5 +83,37 @@ export class AuthService {
         }
         const token = this.jwtService.sign(payload);
         return token;
+    }
+
+
+    //aun sin funcionar por falta de dominio
+    async forgotPassword_send_email(to:string){
+        const user = await this.usuarioRepository.findOneBy({email:to});
+        if(!user) throw new NotFoundException('No se encontro una cuenta creada con este email');
+
+        const token = crypto.randomUUID(); //crear un token random
+        const expiration = new Date(Date.now() + 1000 * 60 * 15); // 15 minutos 
+        await this.forgotPassRepository.save({  //crear el registro en la bd
+            user_id:user.id_usuario,
+            email:user.email, //el email del user
+            token:token, //el token random generado arriba
+            expires_at: expiration  //el tiempo de expiracion
+        });
+        const {error} = await this.resend.emails.send({
+            from:'jobget.soporte.contact@gmail.com',  //mi email
+            to:[to],  //el email de destino
+            subject:'SOLICITUD DE RESTABLECIMIENTO DE CONTRAÑA',  //Mensaje
+            html:`
+                <h1>REESTABLECER CONTRASEÑA</h1>
+                <p>Haz click aqui
+                <a href='https://${process.env.url_front}/user/passReset/forgotPassword-receibed?token=${token}'>Aqui</a>
+                para reestablcer tu constraseña
+                </p>
+            `, //html que se mostrar en el correo enviado
+        });
+        if(error){
+            throw new ConflictException('No se pudo enviar el email de recuperacion'); //si ocurrio un error
+        }
+        return {message:"Solicitud enviada"};
     }
 }

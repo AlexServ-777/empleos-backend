@@ -2,7 +2,9 @@ import { Controller, Get, Inject, Param, Post, Req, Put,Delete, Body, UseGuards 
 import { createServicioDTO, getServicioDTO, updateServicioDTO } from '../dtos/servicios.dto';
 import { ServiciosSService } from '../services/servicios-s.service';
 import { JwtGuardConf } from '../Zconfigs/jwt-guards';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Controller('servicios-c')
 export class ServiciosCController {
     constructor(@Inject(ServiciosSService)
