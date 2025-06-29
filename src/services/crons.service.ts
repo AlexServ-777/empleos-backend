@@ -19,33 +19,66 @@ export class CronsService {
         private readonly servicioRepo: Repository<ServiciosEntity>,
     ) { }
 
-    @Cron('0 0 0 * * *')
-    async delete_empleo_servicio_pasantia() {
+
+    //cron de desactivacion
+    @Cron('0 0 0 * * *') //cada dia osea a las 00:00:00
+    async disabled_empleo_pasantia_servicio() {
         const fechaLimite = new Date();
         fechaLimite.setDate(fechaLimite.getDate()-8);
 
-        //eliminar empleos antiguos
+        //desactivar empleos pasado 1 semana
         const empleosAntiguos = await this.empleoRepo.find({
             where:{fecha_modificacion:LessThan(fechaLimite)}
         });
         for(const empleo of empleosAntiguos){
-            await this.empleoRepo.remove(empleo);
+            await this.empleoRepo.update(empleo.id_empleo,{isActive:false});
         }
 
-        //eliminar pasantias antiguas
+        //desactivar pasantias pasado 1 semana
         const pasantiasAntiguas = await this.pasantiaRepo.find({
             where:{fecha_modificacion:LessThan(fechaLimite)}
         });
         for(const pasantia of pasantiasAntiguas){
-            await this.pasantiaRepo.remove(pasantia);
+            await this.pasantiaRepo.update(pasantia.id_pasantia,{isActive:false});
         }
 
-        //eliminar servicios antiguos
+        //desactivar servicios pasado 1 semana
         const serviciosAntiguos = await this.servicioRepo.find({
             where:{fecha_modificacion:LessThan(fechaLimite)}
         });
         for(const servicio of serviciosAntiguos){
-            await this.servicioRepo.remove(servicio);
+            await this.servicioRepo.update(servicio.id_servicio, {isActive:false});
+        }
+    }
+
+    //cron de eliminacion
+    @Cron('0 0 0 * * *')
+    async delete_empleo_servicio_pasantia(){
+        const fechaLimite = new Date();
+        fechaLimite.setDate(fechaLimite.getDate()-31);
+
+        //eliminar empleos pasado 1 mes
+        const empleosAntiguos = await this.empleoRepo.find({
+            where:{fecha_modificacion:LessThan(fechaLimite)}
+        });
+        for(const empleo of empleosAntiguos){
+            await this.empleoRepo.delete(empleo.id_empleo);
+        }
+
+        //eliminar pasantias pasado 1 mes
+        const pasantiasAntiguas = await this.pasantiaRepo.find({
+            where:{fecha_modificacion:LessThan(fechaLimite)}
+        });
+        for(const pasantia of pasantiasAntiguas){
+            await this.pasantiaRepo.delete(pasantia.id_pasantia);
+        }
+
+        //eliminar servicios pasado 1 mes
+        const serviciosAntiguos = await this.servicioRepo.find({
+            where:{fecha_modificacion:LessThan(fechaLimite)}
+        });
+        for(const servicio of serviciosAntiguos){
+            await this.servicioRepo.delete(servicio.id_servicio);
         }
     }
 }

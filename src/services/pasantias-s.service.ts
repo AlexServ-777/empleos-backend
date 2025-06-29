@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { createPasantiaDTO, sanitizarPasantiaDTO, updatePasantiaDTO } from '../dtos/pasantias.dto';
 import { PasantiaEntity } from '../entidades/pasantias.entity';
 import { UsuarioEntity } from '../entidades/usuarios.entity';
-import { Not, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class PasantiasSService {
@@ -18,7 +18,7 @@ export class PasantiasSService {
     //obtener las pasantias para el publico
     async getPasantias(pais:string):Promise<any>{
         try{
-            const pasantias = await this.pasantiaRepository.find({where:{pais:pais}}); //buscamos todas las pasantia
+            const pasantias = await this.pasantiaRepository.find({where:{pais:pais, isActive:true}}); //buscamos todas las pasantia
             const pasantiasSanitizadas = await  Promise.all(pasantias.map(pasantia => new sanitizarPasantiaDTO().sanitizar(pasantia))); //sanitizar cada pasantia
             return pasantiasSanitizadas;
         }catch(e){

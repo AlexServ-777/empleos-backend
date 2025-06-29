@@ -16,7 +16,7 @@ export class ServiciosSService {
     //GETS
     async getServiciosAll(pais:string): Promise<any> {
         //public
-        const servicios = await this.serviciosRepository.find({where:{pais:pais}}); //busca todos los servicios
+        const servicios = await this.serviciosRepository.find({where:{pais:pais, isActive:true}}); //busca todos los servicios
         const serviciosSanitizados = await Promise.all(servicios.map(servicio => new sanitizarServicioDTO().sanitizar(servicio))); //sanitiza todos los servicios para no enviar datos sensibles
         return serviciosSanitizados; 
     }

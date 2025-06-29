@@ -16,7 +16,7 @@ export class EmpleosSService {
     ){}
     //gets
     async getEmpleos(pais:string):Promise<any>{
-        const empleos = await this.empleosRepository.find({where:{pais:pais}}); //buscamos todos los empleos
+        const empleos = await this.empleosRepository.find({where:{pais:pais,isActive:true}}); //buscamos todos los empleos
         const empleosSanitizados = await Promise.all(empleos.map(empleo => new sanitizarEmpleoDTO().sanitizar(empleo))); //sanitizamos cada empleos
         return empleosSanitizados;
     }
