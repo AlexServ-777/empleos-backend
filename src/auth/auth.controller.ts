@@ -1,10 +1,10 @@
 import { Body, Controller, Get,Param,Post, Req, Res, UseGuards, UsePipes } from '@nestjs/common';
-import { SkipThrottle, Throttle, ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { loginUserDTO } from '../dtos/usuarios.dto';
+import { SkipThrottle } from '@nestjs/throttler';
+import { loginUserDTO } from '../user/usuarios.dto';
 import { AuthService } from './auth.service';
-import { GoogleAuthGuard } from '../Zconfigs/google-auth/google-auth.guard';
+import { GoogleAuthGuard } from './google_config/google-auth.guard';
 import { Request, Response } from 'express';
-import { JwtGuardConf } from '../Zconfigs/jwt-guards';
+import { JwtGuardConf } from './auth_config/jwt-guards';
 
 @Controller('auth')
 export class AuthController {
@@ -14,7 +14,7 @@ export class AuthController {
 
     @SkipThrottle() //no tiene limites de llamadas
     @Get('csrf-token')
-    getCsrfToken(@Req() req: Request) {
+    getCsrfToken(@Req() req: any) {
         return {
             token: req.csrfToken()
         };

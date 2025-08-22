@@ -13,12 +13,12 @@ async function bootstrap() {
 
   //config https
   const httpsOptions = {
-    key: fs.readFileSync('./certificates/localhost-key.pem'),
-    cert: fs.readFileSync('./certificates/localhost.pem'),
+      key: fs.readFileSync('./certificates/localhost-key.pem'),
+      cert: fs.readFileSync('./certificates/localhost.pem'),
   };
 
   const app = await NestFactory.create(AppModule,{
-    //httpsOptions,
+    httpsOptions,
   });
   const configService = app.get(ConfigService);
 
@@ -55,6 +55,7 @@ async function bootstrap() {
   // Manejador de errores CSRF
   app.use((err: any, req: any, res: any, next: any) => {
     if (err.code === 'EBADCSRFTOKEN') {
+      console.log(err.code);
       return res.status(403).json({
         statusCode: 403,
         message: 'Token CSRF inválido o faltante',

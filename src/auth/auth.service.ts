@@ -1,16 +1,16 @@
 import { ConflictException, ForbiddenException, HttpException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UsuarioEntity } from '../entidades/usuarios.entity';
+import { UsuarioEntity } from '../user/usuarios.entity';
 import { Repository } from 'typeorm';
-import { CreateUsuarioDto, loginUserDTO } from '../dtos/usuarios.dto';
+import { CreateUsuarioDto, loginUserDTO } from '../user/usuarios.dto';
 import { compare } from 'bcryptjs';
 import * as bcrypt from 'bcryptjs';
 import { Request } from 'express';
 import { randomUUID } from 'node:crypto';
 import { Resend } from 'resend';
 import { ConfigService } from '@nestjs/config';
-import { Forgot_Password_Entity } from 'src/entidades/forgot-password.entity';
+import { Forgot_Password_Entity } from 'src/auth/forgot-password.entity';
 
 @Injectable()
 export class AuthService {

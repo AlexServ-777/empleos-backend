@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsuarioEntity } from './entidades/usuarios.entity';
-import { PasantiaEntity } from './entidades/pasantias.entity';
-import { EmpleosModule } from './modulos/empleos.module';
-import { EmpleosEntity } from './entidades/empleos.entity';
-import { PasantiasModule } from './modulos/pasantias.module';
-import { UsuariosModule } from './modulos/usuarios.module';
+import { UsuarioEntity } from './user/usuarios.entity';
+import { PasantiaEntity } from './items/pasantias/pasantias.entity';
+import { EmpleosModule } from './items/empleos/empleos.module';
+import { EmpleosEntity } from './items/empleos/empleos.entity';
+import { PasantiasModule } from './items/pasantias/pasantias.module';
+import { UsuariosModule } from './user/usuarios.module';
 import { AppDataSource } from './Zconfigs/data-source';
-import { ServiciosModule } from './modulos/servicios.module';
-import { ServiciosEntity } from './entidades/servicio.entity';
-import { FavoritosEntity } from './entidades/favoritos.entity';
-import { CronsModule } from './modulos/crons.module';
+import { ServiciosModule } from './items/servicios/servicios.module';
+import { ServiciosEntity } from './items/servicios/servicio.entity';
+import { FavoritosEntity } from './user/relations/favorites/favoritos.entity';
+import { CronsModule } from './cron-jobs/crons.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
